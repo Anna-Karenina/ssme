@@ -847,6 +847,58 @@ class ProcessInfo extends $pb.GeneratedMessage {
   $core.List<NodeRunTime> get nodes => $_getList(1);
 }
 
+class NodejsVersionsInfo extends $pb.GeneratedMessage {
+  factory NodejsVersionsInfo({
+    $core.Iterable<$core.String>? installed,
+    $core.Iterable<$core.String>? remoteLts,
+  }) {
+    final $result = create();
+    if (installed != null) {
+      $result.installed.addAll(installed);
+    }
+    if (remoteLts != null) {
+      $result.remoteLts.addAll(remoteLts);
+    }
+    return $result;
+  }
+  NodejsVersionsInfo._() : super();
+  factory NodejsVersionsInfo.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory NodejsVersionsInfo.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'NodejsVersionsInfo', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+    ..pPS(1, _omitFieldNames ? '' : 'installed')
+    ..pPS(2, _omitFieldNames ? '' : 'remoteLts', protoName: 'remoteLts')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  NodejsVersionsInfo clone() => NodejsVersionsInfo()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  NodejsVersionsInfo copyWith(void Function(NodejsVersionsInfo) updates) => super.copyWith((message) => updates(message as NodejsVersionsInfo)) as NodejsVersionsInfo;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static NodejsVersionsInfo create() => NodejsVersionsInfo._();
+  NodejsVersionsInfo createEmptyInstance() => create();
+  static $pb.PbList<NodejsVersionsInfo> createRepeated() => $pb.PbList<NodejsVersionsInfo>();
+  @$core.pragma('dart2js:noInline')
+  static NodejsVersionsInfo getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<NodejsVersionsInfo>(create);
+  static NodejsVersionsInfo? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.List<$core.String> get installed => $_getList(0);
+
+  @$pb.TagNumber(2)
+  $core.List<$core.String> get remoteLts => $_getList(1);
+}
+
 
 const _omitFieldNames = $core.bool.fromEnvironment('protobuf.omit_field_names');
 const _omitMessageNames = $core.bool.fromEnvironment('protobuf.omit_message_names');

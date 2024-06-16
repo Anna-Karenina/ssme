@@ -192,3 +192,17 @@ final $typed_data.Uint8List processInfoDescriptor = $convert.base64Decode(
     'RVc2FnZVILZW52aXJvbm1lbnQSJgoFbm9kZXMYAiADKAsyEC5hcGkuTm9kZVJ1blRpbWVSBW5v'
     'ZGVz');
 
+@$core.Deprecated('Use nodejsVersionsInfoDescriptor instead')
+const NodejsVersionsInfo$json = {
+  '1': 'NodejsVersionsInfo',
+  '2': [
+    {'1': 'installed', '3': 1, '4': 3, '5': 9, '10': 'installed'},
+    {'1': 'remoteLts', '3': 2, '4': 3, '5': 9, '10': 'remoteLts'},
+  ],
+};
+
+/// Descriptor for `NodejsVersionsInfo`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List nodejsVersionsInfoDescriptor = $convert.base64Decode(
+    'ChJOb2RlanNWZXJzaW9uc0luZm8SHAoJaW5zdGFsbGVkGAEgAygJUglpbnN0YWxsZWQSHAoJcm'
+    'Vtb3RlTHRzGAIgAygJUglyZW1vdGVMdHM=');
+

@@ -203,6 +203,10 @@ class EnvironmentClient extends $grpc.Client {
       '/api.Environment/ProcessStream',
       ($0.DataRequest value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.ProcessInfo.fromBuffer(value));
+  static final _$getNodejsInfo = $grpc.ClientMethod<$0.EmptyParams, $0.NodejsVersionsInfo>(
+      '/api.Environment/GetNodejsInfo',
+      ($0.EmptyParams value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.NodejsVersionsInfo.fromBuffer(value));
 
   EnvironmentClient($grpc.ClientChannel channel,
       {$grpc.CallOptions? options,
@@ -212,6 +216,10 @@ class EnvironmentClient extends $grpc.Client {
 
   $grpc.ResponseStream<$0.ProcessInfo> processStream($0.DataRequest request, {$grpc.CallOptions? options}) {
     return $createStreamingCall(_$processStream, $async.Stream.fromIterable([request]), options: options);
+  }
+
+  $grpc.ResponseFuture<$0.NodejsVersionsInfo> getNodejsInfo($0.EmptyParams request, {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$getNodejsInfo, request, options: options);
   }
 }
 
@@ -227,11 +235,23 @@ abstract class EnvironmentServiceBase extends $grpc.Service {
         true,
         ($core.List<$core.int> value) => $0.DataRequest.fromBuffer(value),
         ($0.ProcessInfo value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.EmptyParams, $0.NodejsVersionsInfo>(
+        'GetNodejsInfo',
+        getNodejsInfo_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.EmptyParams.fromBuffer(value),
+        ($0.NodejsVersionsInfo value) => value.writeToBuffer()));
   }
 
   $async.Stream<$0.ProcessInfo> processStream_Pre($grpc.ServiceCall call, $async.Future<$0.DataRequest> request) async* {
     yield* processStream(call, await request);
   }
 
+  $async.Future<$0.NodejsVersionsInfo> getNodejsInfo_Pre($grpc.ServiceCall call, $async.Future<$0.EmptyParams> request) async {
+    return getNodejsInfo(call, await request);
+  }
+
   $async.Stream<$0.ProcessInfo> processStream($grpc.ServiceCall call, $0.DataRequest request);
+  $async.Future<$0.NodejsVersionsInfo> getNodejsInfo($grpc.ServiceCall call, $0.EmptyParams request);
 }

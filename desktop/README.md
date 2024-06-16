@@ -4,4 +4,4 @@
 2. 
 
 
-protoc --proto_path=/Users/vladislav.sokolov/develop/self/sme/ssme_engine/api /Users/vladislav.sokolov/develop/self/sme/ssme_engine/api/*proto   --dart_out=grpc:/Users/vladislav.sokolov/develop/self/sme/desktop/lib/pb
+protoc --proto_path=/Users/vladislav.sokolov/develop/self/ssme/proto /Users/vladislav.sokolov/develop/self/ssme/proto/*proto   --dart_out=grpc:/Users/vladislav.sokolov/develop/self/ssme/desktop/lib/pb
