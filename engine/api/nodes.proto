@@ -1,0 +1,97 @@
+syntax = "proto3";
+package api;
+
+
+option go_package = "github.com/Anna-Karenina/sme-engine;apiv1";
+
+
+service Nodes {
+  rpc CreateNode (CreateRequest) returns (Node);
+  rpc ReadNode (ReadRequest) returns (Node);
+  rpc UpdateNode (CreateRequest) returns (Node);
+  rpc RemoveNode (ReadRequest) returns (ReadRequest);
+  rpc ReadAllNodes (EmptyParams) returns (NodeList);
+
+  rpc RunNode(RunNodeRequest) returns (NodeRunTime);
+  rpc StopNode(StopNodeRequest) returns (NodeRunTime);
+  rpc UpdateNodeScripts(ReadRequest) returns(Node);
+}
+
+
+service Environment{ 
+  rpc ProcessStream(DataRequest) returns (stream ProcessInfo);
+  rpc GetNodejsInfo(EmptyParams) returns (NodejsVersionsInfo);
+}
+
+message EmptyParams {}
+
+message Node { 
+  int32 id                = 1;
+  string path             = 2;
+  string name             = 3;
+  repeated string scripts = 4;
+  string node_version     = 5;
+}
+
+message NodeList{
+  repeated Node nodes = 1;
+}
+
+message CreateRequest { 
+  string path = 1;
+  string name = 2;
+}
+
+message ReadRequest { 
+  int32 id = 1;
+}
+
+message Remove {
+  string path = 1; 
+}
+
+message StatusResponse {
+  string status = 1;
+}
+
+message StopNodeRequest  {
+  int32 id = 1;
+}
+
+message RunNodeRequest {
+  int32 id       = 1;
+  string command = 2;
+}
+
+message NodeRunTime {
+  int32 id                = 1;
+	string status           = 2;
+	int32 pid               = 3;
+	int32 cpu               = 4;
+	int32 mem               = 5;
+	int32 sid               = 6;
+	repeated int32 ports    = 7;
+	string branch           = 8;
+
+}
+
+
+message DataRequest { 
+  string id = 1;
+}
+
+message TotalEnviromentUsage { 
+  string cpu     = 1;
+	string mem     = 2;
+  int32 quantity = 3;
+}
+
+message ProcessInfo {
+  TotalEnviromentUsage environment = 1;
+  repeated NodeRunTime nodes       = 2;
+}
+
+message NodejsVersionsInfo { 
+  repeated string installed = 1;
+  repeated string remoteLts = 2;
+}
