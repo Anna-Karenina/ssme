@@ -23,6 +23,8 @@ import (
 const op = "environment.service"
 const nodejsLocal = "ls"
 const nodejsRemote = "ls-remote --lts --sort=desc"
+const nodeVersionFileName = ".node_version"
+const nvmrcFilename = ".nvmrc"
 
 type Environment struct {
 	log            *slog.Logger
@@ -31,6 +33,67 @@ type Environment struct {
 
 func New(log *slog.Logger, runTimeStorage *appsruntime.AppsStorage) *Environment {
 	return &Environment{log: log, runTimeStorage: runTimeStorage}
+}
+
+func (e *Environment) UpdateNodejsVersionInRcFile(ctx context.Context, appPath string, version string) error {
+	log := e.log.With(slog.String("op", op), slog.String(".path", appPath))
+	log.Info("try update .node_version or .nvmrc files")
+
+	isExist := make([]bool, 0)
+
+	for _, f := range []string{nodeVersionFileName, nvmrcFilename} {
+		fileFullPath := fmt.Sprintf("%s/%s", appPath, f)
+		if _, err := os.Stat(fileFullPath); err == nil {
+			isExist = append(isExist, true)
+			os.WriteFile(fileFullPath, []byte(version), 0644)
+		} else {
+			isExist = append(isExist, false)
+			continue
+		}
+	}
+	if slices.Contains(isExist, true) {
+		return nil
+
+	} else {
+		return os.ErrNotExist
+	}
+}
+
+func (e *Environment) DownloadNodeJsVersion(version string, messageCh chan string) {
+	log := e.log.With(slog.String("op", op), slog.String(".version", version))
+	log.Info("in env service")
+
+	reader, writer := io.Pipe()
+	scannerStopped := make(chan struct{})
+
+	command := fmt.Sprintf("fnm install %s", version)
+	parts := strings.Split(command, " ")
+	cmd := exec.Command(parts[0], parts[1:]...)
+	cmd.Stdout = writer
+	// cmd.Stderr = writer
+
+	go func() {
+		defer close(scannerStopped)
+		scanner := bufio.NewScanner(reader)
+		for scanner.Scan() {
+			value := scanner.Bytes()
+
+			fmt.Printf("\n\n text: %s \n\n", value)
+			messageCh <- string(value)
+
+		}
+	}()
+
+	_ = cmd.Run()
+
+	go func() {
+		_ = cmd.Wait()
+		writer.Close()
+
+	}()
+
+	<-scannerStopped
+	messageCh <- "done"
 }
 
 func (e *Environment) ParseAppPkgJson(appPath string) (*models.AppPkgJson, error) {
@@ -129,7 +192,6 @@ func (e *Environment) GetNodejsInfo(ctx context.Context) (*models.NodejsVersions
 }
 
 func getInstalledNodejs(from string) []string {
-
 	versions := make([]string, 0)
 	command := fmt.Sprintf("fnm %s", from)
 	parts := strings.Split(command, " ")
@@ -159,15 +221,6 @@ func getInstalledNodejs(from string) []string {
 	versions = tempVersion
 
 	return versions
-}
-
-func stripChars(str, chr string) string {
-	return strings.Map(func(r rune) rune {
-		if strings.IndexRune(chr, r) < 0 {
-			return r
-		}
-		return -1
-	}, str)
 }
 
 func getRunningNodePids(storage *appsruntime.AppsStorage) ([]int32, bool) {

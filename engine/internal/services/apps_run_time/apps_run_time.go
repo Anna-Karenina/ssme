@@ -90,7 +90,6 @@ func (a *AppsRunTimeService) RunNode(ctx context.Context, payload *appsruntime.R
 	defer l.Close()
 	cmd := exec.Command(parts[0], parts[1:]...)
 
-	cmd.Stdin = l
 	cmd.Stdout = l
 	cmd.Stderr = l
 

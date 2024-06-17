@@ -15,12 +15,15 @@ service Nodes {
   rpc RunNode(RunNodeRequest) returns (NodeRunTime);
   rpc StopNode(StopNodeRequest) returns (NodeRunTime);
   rpc UpdateNodeScripts(ReadRequest) returns(Node);
+  rpc UpdateDefaultRunScript(UpdateDefaultRunScriptParams) returns (Node);
 }
 
 
 service Environment{ 
   rpc ProcessStream(DataRequest) returns (stream ProcessInfo);
   rpc GetNodejsInfo(EmptyParams) returns (NodejsVersionsInfo);
+  rpc UpdateDefaultNodejsVersion(UpdateDefaultNodejsVersionParams) returns (StatusResponse);
+  rpc DownloadNodeJsVersion(RequestVersion) returns (stream TimeLeft);
 }
 
 message EmptyParams {}
@@ -31,7 +34,19 @@ message Node {
   string name             = 3;
   repeated string scripts = 4;
   string node_version     = 5;
+  string default_script   = 6;
 }
+
+
+message RequestVersion {
+    string version = 1;
+  }
+
+message UpdateDefaultNodejsVersionParams {
+    int32 id           = 1;
+    string version   = 2;
+    bool updateNvmrc = 3;
+  }
 
 message NodeList{
   repeated Node nodes = 1;
@@ -94,4 +109,12 @@ message ProcessInfo {
 message NodejsVersionsInfo { 
   repeated string installed = 1;
   repeated string remoteLts = 2;
+}
+message UpdateDefaultRunScriptParams {
+    string script = 1;
+    int32 id      = 2;
+}
+
+message TimeLeft {
+  string left = 1;
 }

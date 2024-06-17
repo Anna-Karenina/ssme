@@ -12,6 +12,7 @@ class NodeUi {
   final String ports;
   final String branch;
   final String nodeVersion;
+  final String defaultScript;
   final List<String> scripts;
 
   NodeUi(
@@ -26,6 +27,7 @@ class NodeUi {
       required this.ports,
       required this.branch,
       required this.scripts,
+      required this.defaultScript,
       required this.nodeVersion});
 }
 
@@ -36,8 +38,9 @@ List<NodeUi> nodesUifromRequest(NodeList list) {
       id: e.id,
       name: e.name,
       path: e.path,
-      nodeVersion: e.nodeVersion,
+      nodeVersion: e.nodeVersion.trim(),
       scripts: e.scripts,
+      defaultScript: e.defaultScript,
       //runtime
       status: "",
       pid: "",
@@ -63,4 +66,5 @@ NodeUi nodeUiFromRequest(NodeRunTime nodeRt, NodeUi currentNode) => NodeUi(
     name: currentNode.name,
     path: currentNode.path,
     scripts: currentNode.scripts,
-    nodeVersion: currentNode.nodeVersion);
+    nodeVersion: currentNode.nodeVersion,
+    defaultScript: currentNode.defaultScript);

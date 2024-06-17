@@ -36,7 +36,9 @@ class _DashboardState extends State<Dashboard> {
   bool _isTableLoading = true;
   Key _tableKey = Key("1");
 
-  EnviromentUi _enviroment = EnviromentUi(cpu: "", mem: "", quantity: "");
+  EnviromentUi _enviroment = EnviromentUi(cpu: "", mem: "0%", quantity: "");
+  NodejsVersionsInfo _nodejsVersionsInfo =
+      NodejsVersionsInfo(installed: [], remoteLts: []);
 
   @override
   void initState() {
@@ -253,12 +255,15 @@ class _DashboardState extends State<Dashboard> {
                 child: Container(
                   color: Colors.transparent,
                   child: NodeTable(
-                    key: _tableKey,
-                    runApp: _runApp,
-                    stopApp: _stopApp,
-                    columns: columns,
-                    nodes: nodes,
-                  ),
+                      key: _tableKey,
+                      runApp: _runApp,
+                      stopApp: _stopApp,
+                      columns: columns,
+                      nodes: nodes,
+                      syncAppData: _syncAppData,
+                      nodejsVersionsInfo: _nodejsVersionsInfo,
+                      saveNewNodeJsVersion: _saveNewNodeJsVersion,
+                      updateDefaultScript: _updateDefaultScript),
                 ),
               )),
             ],
@@ -274,6 +279,8 @@ class _DashboardState extends State<Dashboard> {
     });
     try {
       // _observeEnv();
+      await _getNodeJsInfo();
+
       final apiNodes = await grpc.nodeClient!.readAllNodes(EmptyParams());
       setState(() => nodes = nodesUifromRequest(apiNodes));
       print(nodes);
@@ -297,7 +304,7 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  _runApp(NodeUi curerntNode) async {
+  Future<void> _runApp(NodeUi curerntNode) async {
     try {
       final apiNode = await grpc.nodeClient!
           .runNode(RunNodeRequest(command: "dev", id: curerntNode.id));
@@ -312,7 +319,7 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  _stopApp(NodeUi curerntNode) async {
+  Future<void> _stopApp(NodeUi curerntNode) async {
     try {
       final apiNode =
           await grpc.nodeClient!.stopNode(StopNodeRequest(id: curerntNode.id));
@@ -353,6 +360,126 @@ class _DashboardState extends State<Dashboard> {
       }
     } catch (e) {
       print(e.toString());
+    }
+  }
+
+  _getNodeJsInfo() async {
+    try {
+      final nodeJsVerions = await grpc.envClient!.getNodejsInfo(EmptyParams());
+      setState(() => _nodejsVersionsInfo = nodeJsVerions);
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  _updateDefaultNodejsVersion(int id, bool updateNvmrc, String version) async {
+    try {
+      await grpc.envClient!.updateDefaultNodejsVersion(
+          UpdateDefaultNodejsVersionParams(
+              id: id, updateNvmrc: updateNvmrc, version: version));
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<NodeUi?> _syncAppData(int id) async {
+    try {
+      await grpc.nodeClient!.updateNodeScripts(ReadRequest(id: id));
+      final apiNode = await grpc.nodeClient!.readNode(ReadRequest(id: id));
+      var updatedNode = null;
+
+      final newNodes = nodes.map<NodeUi>((n) {
+        if (n.id == id) {
+          updatedNode = NodeUi(
+            id: id,
+            name: apiNode.name,
+            path: apiNode.path,
+            scripts: apiNode.scripts,
+            nodeVersion: apiNode.nodeVersion,
+            defaultScript: apiNode.defaultScript,
+            status: n.status,
+            pid: n.pid,
+            cpu: n.cpu,
+            mem: n.mem,
+            sid: n.sid,
+            ports: n.ports,
+            branch: n.branch,
+          );
+          return updatedNode;
+        } else {
+          return n;
+        }
+      }).toList();
+      setState(() => nodes = newNodes);
+      return updatedNode;
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> _saveNewNodeJsVersion(String version, NodeUi node) async {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        backgroundColor: CustomColors.drawerColor,
+        title: const Text('Update?'),
+        content: const Text(
+            'Update nodejs project version file (.nvmrc, .node_version)'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              _updateDefaultNodejsVersion(node.id, false, version);
+              Navigator.pop(context, 'Cancel');
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              _updateDefaultNodejsVersion(node.id, true, version);
+              Navigator.pop(context, 'Update');
+            },
+            child: const Text('Update now'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _updateDefaultScript(
+      int id, String script, bool saveAsDefault) async {
+    try {
+      if (saveAsDefault) {
+        await grpc.nodeClient!.updateDefaultRunScript(
+            UpdateDefaultRunScriptParams(id: id, script: script));
+      }
+
+      final newNodes = nodes.map((n) {
+        return n.id == id
+            ? NodeUi(
+                id: n.id,
+                name: n.name,
+                path: n.path,
+                status: n.status,
+                pid: n.pid,
+                cpu: n.cpu,
+                mem: n.mem,
+                sid: n.sid,
+                ports: n.ports,
+                branch: n.branch,
+                scripts: n.scripts,
+                nodeVersion: n.nodeVersion,
+                defaultScript: script)
+            : n;
+      }).toList();
+
+      if (mounted) {
+        setState(() {
+          _tableKey = Key("${_tableKey}1");
+          nodes = newNodes;
+        });
+      }
+    } catch (e) {
+      print(e);
     }
   }
 }

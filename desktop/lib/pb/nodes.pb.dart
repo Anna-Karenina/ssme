@@ -52,6 +52,7 @@ class Node extends $pb.GeneratedMessage {
     $core.String? name,
     $core.Iterable<$core.String>? scripts,
     $core.String? nodeVersion,
+    $core.String? defaultScript,
   }) {
     final $result = create();
     if (id != null) {
@@ -69,6 +70,9 @@ class Node extends $pb.GeneratedMessage {
     if (nodeVersion != null) {
       $result.nodeVersion = nodeVersion;
     }
+    if (defaultScript != null) {
+      $result.defaultScript = defaultScript;
+    }
     return $result;
   }
   Node._() : super();
@@ -81,6 +85,7 @@ class Node extends $pb.GeneratedMessage {
     ..aOS(3, _omitFieldNames ? '' : 'name')
     ..pPS(4, _omitFieldNames ? '' : 'scripts')
     ..aOS(5, _omitFieldNames ? '' : 'nodeVersion')
+    ..aOS(6, _omitFieldNames ? '' : 'defaultScript')
     ..hasRequiredFields = false
   ;
 
@@ -143,6 +148,143 @@ class Node extends $pb.GeneratedMessage {
   $core.bool hasNodeVersion() => $_has(4);
   @$pb.TagNumber(5)
   void clearNodeVersion() => clearField(5);
+
+  @$pb.TagNumber(6)
+  $core.String get defaultScript => $_getSZ(5);
+  @$pb.TagNumber(6)
+  set defaultScript($core.String v) { $_setString(5, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasDefaultScript() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearDefaultScript() => clearField(6);
+}
+
+class RequestVersion extends $pb.GeneratedMessage {
+  factory RequestVersion({
+    $core.String? version,
+  }) {
+    final $result = create();
+    if (version != null) {
+      $result.version = version;
+    }
+    return $result;
+  }
+  RequestVersion._() : super();
+  factory RequestVersion.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory RequestVersion.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'RequestVersion', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'version')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  RequestVersion clone() => RequestVersion()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  RequestVersion copyWith(void Function(RequestVersion) updates) => super.copyWith((message) => updates(message as RequestVersion)) as RequestVersion;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static RequestVersion create() => RequestVersion._();
+  RequestVersion createEmptyInstance() => create();
+  static $pb.PbList<RequestVersion> createRepeated() => $pb.PbList<RequestVersion>();
+  @$core.pragma('dart2js:noInline')
+  static RequestVersion getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<RequestVersion>(create);
+  static RequestVersion? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get version => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set version($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasVersion() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearVersion() => clearField(1);
+}
+
+class UpdateDefaultNodejsVersionParams extends $pb.GeneratedMessage {
+  factory UpdateDefaultNodejsVersionParams({
+    $core.int? id,
+    $core.String? version,
+    $core.bool? updateNvmrc,
+  }) {
+    final $result = create();
+    if (id != null) {
+      $result.id = id;
+    }
+    if (version != null) {
+      $result.version = version;
+    }
+    if (updateNvmrc != null) {
+      $result.updateNvmrc = updateNvmrc;
+    }
+    return $result;
+  }
+  UpdateDefaultNodejsVersionParams._() : super();
+  factory UpdateDefaultNodejsVersionParams.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory UpdateDefaultNodejsVersionParams.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'UpdateDefaultNodejsVersionParams', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+    ..a<$core.int>(1, _omitFieldNames ? '' : 'id', $pb.PbFieldType.O3)
+    ..aOS(2, _omitFieldNames ? '' : 'version')
+    ..aOB(3, _omitFieldNames ? '' : 'updateNvmrc', protoName: 'updateNvmrc')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  UpdateDefaultNodejsVersionParams clone() => UpdateDefaultNodejsVersionParams()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  UpdateDefaultNodejsVersionParams copyWith(void Function(UpdateDefaultNodejsVersionParams) updates) => super.copyWith((message) => updates(message as UpdateDefaultNodejsVersionParams)) as UpdateDefaultNodejsVersionParams;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static UpdateDefaultNodejsVersionParams create() => UpdateDefaultNodejsVersionParams._();
+  UpdateDefaultNodejsVersionParams createEmptyInstance() => create();
+  static $pb.PbList<UpdateDefaultNodejsVersionParams> createRepeated() => $pb.PbList<UpdateDefaultNodejsVersionParams>();
+  @$core.pragma('dart2js:noInline')
+  static UpdateDefaultNodejsVersionParams getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<UpdateDefaultNodejsVersionParams>(create);
+  static UpdateDefaultNodejsVersionParams? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.int get id => $_getIZ(0);
+  @$pb.TagNumber(1)
+  set id($core.int v) { $_setSignedInt32(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearId() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get version => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set version($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasVersion() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearVersion() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.bool get updateNvmrc => $_getBF(2);
+  @$pb.TagNumber(3)
+  set updateNvmrc($core.bool v) { $_setBool(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasUpdateNvmrc() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearUpdateNvmrc() => clearField(3);
 }
 
 class NodeList extends $pb.GeneratedMessage {
@@ -897,6 +1039,70 @@ class NodejsVersionsInfo extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(2)
   $core.List<$core.String> get remoteLts => $_getList(1);
+}
+
+class UpdateDefaultRunScriptParams extends $pb.GeneratedMessage {
+  factory UpdateDefaultRunScriptParams({
+    $core.String? script,
+    $core.int? id,
+  }) {
+    final $result = create();
+    if (script != null) {
+      $result.script = script;
+    }
+    if (id != null) {
+      $result.id = id;
+    }
+    return $result;
+  }
+  UpdateDefaultRunScriptParams._() : super();
+  factory UpdateDefaultRunScriptParams.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory UpdateDefaultRunScriptParams.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'UpdateDefaultRunScriptParams', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'script')
+    ..a<$core.int>(2, _omitFieldNames ? '' : 'id', $pb.PbFieldType.O3)
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  UpdateDefaultRunScriptParams clone() => UpdateDefaultRunScriptParams()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  UpdateDefaultRunScriptParams copyWith(void Function(UpdateDefaultRunScriptParams) updates) => super.copyWith((message) => updates(message as UpdateDefaultRunScriptParams)) as UpdateDefaultRunScriptParams;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static UpdateDefaultRunScriptParams create() => UpdateDefaultRunScriptParams._();
+  UpdateDefaultRunScriptParams createEmptyInstance() => create();
+  static $pb.PbList<UpdateDefaultRunScriptParams> createRepeated() => $pb.PbList<UpdateDefaultRunScriptParams>();
+  @$core.pragma('dart2js:noInline')
+  static UpdateDefaultRunScriptParams getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<UpdateDefaultRunScriptParams>(create);
+  static UpdateDefaultRunScriptParams? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get script => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set script($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasScript() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearScript() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.int get id => $_getIZ(1);
+  @$pb.TagNumber(2)
+  set id($core.int v) { $_setSignedInt32(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasId() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearId() => clearField(2);
 }
 
 

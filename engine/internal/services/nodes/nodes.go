@@ -21,6 +21,7 @@ type Node struct {
 type EnvService interface {
 	ParseAppPkgJson(appPath string) (*models.AppPkgJson, error)
 	ParseProjectNodeJsVersionFile(appPath string) (string, error)
+	UpdateNodejsVersionInRcFile(ctx context.Context, filePath string, version string) error
 }
 
 type NodeActions interface {
@@ -33,6 +34,7 @@ type NodeCRUD interface {
 	Read(ctx context.Context, id int) (*models.Node, error)
 	Update(ctx context.Context, in *models.Node) (*models.Node, error)
 	GetAllNodes(ctx context.Context) ([]*models.Node, error)
+	InternalGetNodeById(cxt context.Context, id int) (*models.Node, error)
 }
 
 func New(log *slog.Logger, crudNode NodeCRUD, nodeActions NodeActions, envService EnvService) *Node {
@@ -142,6 +144,46 @@ func (n *Node) UpdateNodeScripts(ctx context.Context, id int) (*models.Node, err
 	}
 
 	node.Scripts = scripts.Scripts
+	node, err = n.nodeCRUD.Update(ctx, node)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+	return node, nil
+}
+func (n *Node) UpdateAppDefaultNodeJsVerion(ctx context.Context, id int, version string, updateNvmrc bool) (string, error) {
+
+	node, err := n.nodeCRUD.InternalGetNodeById(ctx, id)
+	if err != nil {
+		return "", fmt.Errorf("%s: %w", op, err)
+	}
+
+	node.NodeJsVersion = version
+	node, err = n.nodeCRUD.Update(ctx, node)
+	if err != nil {
+		return "", fmt.Errorf("%s: %w", op, err)
+	}
+
+	if updateNvmrc {
+		err = n.envService.UpdateNodejsVersionInRcFile(ctx, node.Path, version)
+		if err != nil {
+			return "", fmt.Errorf("%s: %w", op, err)
+		}
+	}
+
+	return "ok", nil
+}
+
+func (n *Node) UpdateDefaultRunScript(ctx context.Context, id int, script string) (node *models.Node, err error) {
+	const op = "NODE.UpdateDefaultRunScript"
+	log := n.log.With(slog.String("op", op), slog.Int("Id", id))
+	log.Info("try start node")
+
+	node, err = n.nodeCRUD.InternalGetNodeById(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	node.DefaultScript = script
 	node, err = n.nodeCRUD.Update(ctx, node)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)

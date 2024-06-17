@@ -25,5 +25,6 @@ type Node struct {
 	Id            int     `db:"id"`
 	Name          string  `db:"name"`
 	Scripts       Scripts `db:"cmds" json:"scripts"`
-	NodeJsVersion string  `db:"node_version" json:"nodjs_version"`
+	NodeJsVersion string  `db:"node_version"`
+	DefaultScript string  `db:"default_script"`
 }

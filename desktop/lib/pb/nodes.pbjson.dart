@@ -31,6 +31,7 @@ const Node$json = {
     {'1': 'name', '3': 3, '4': 1, '5': 9, '10': 'name'},
     {'1': 'scripts', '3': 4, '4': 3, '5': 9, '10': 'scripts'},
     {'1': 'node_version', '3': 5, '4': 1, '5': 9, '10': 'nodeVersion'},
+    {'1': 'default_script', '3': 6, '4': 1, '5': 9, '10': 'defaultScript'},
   ],
 };
 
@@ -38,7 +39,34 @@ const Node$json = {
 final $typed_data.Uint8List nodeDescriptor = $convert.base64Decode(
     'CgROb2RlEg4KAmlkGAEgASgFUgJpZBISCgRwYXRoGAIgASgJUgRwYXRoEhIKBG5hbWUYAyABKA'
     'lSBG5hbWUSGAoHc2NyaXB0cxgEIAMoCVIHc2NyaXB0cxIhCgxub2RlX3ZlcnNpb24YBSABKAlS'
-    'C25vZGVWZXJzaW9u');
+    'C25vZGVWZXJzaW9uEiUKDmRlZmF1bHRfc2NyaXB0GAYgASgJUg1kZWZhdWx0U2NyaXB0');
+
+@$core.Deprecated('Use requestVersionDescriptor instead')
+const RequestVersion$json = {
+  '1': 'RequestVersion',
+  '2': [
+    {'1': 'version', '3': 1, '4': 1, '5': 9, '10': 'version'},
+  ],
+};
+
+/// Descriptor for `RequestVersion`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List requestVersionDescriptor = $convert.base64Decode(
+    'Cg5SZXF1ZXN0VmVyc2lvbhIYCgd2ZXJzaW9uGAEgASgJUgd2ZXJzaW9u');
+
+@$core.Deprecated('Use updateDefaultNodejsVersionParamsDescriptor instead')
+const UpdateDefaultNodejsVersionParams$json = {
+  '1': 'UpdateDefaultNodejsVersionParams',
+  '2': [
+    {'1': 'id', '3': 1, '4': 1, '5': 5, '10': 'id'},
+    {'1': 'version', '3': 2, '4': 1, '5': 9, '10': 'version'},
+    {'1': 'updateNvmrc', '3': 3, '4': 1, '5': 8, '10': 'updateNvmrc'},
+  ],
+};
+
+/// Descriptor for `UpdateDefaultNodejsVersionParams`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List updateDefaultNodejsVersionParamsDescriptor = $convert.base64Decode(
+    'CiBVcGRhdGVEZWZhdWx0Tm9kZWpzVmVyc2lvblBhcmFtcxIOCgJpZBgBIAEoBVICaWQSGAoHdm'
+    'Vyc2lvbhgCIAEoCVIHdmVyc2lvbhIgCgt1cGRhdGVOdm1yYxgDIAEoCFILdXBkYXRlTnZtcmM=');
 
 @$core.Deprecated('Use nodeListDescriptor instead')
 const NodeList$json = {
@@ -205,4 +233,18 @@ const NodejsVersionsInfo$json = {
 final $typed_data.Uint8List nodejsVersionsInfoDescriptor = $convert.base64Decode(
     'ChJOb2RlanNWZXJzaW9uc0luZm8SHAoJaW5zdGFsbGVkGAEgAygJUglpbnN0YWxsZWQSHAoJcm'
     'Vtb3RlTHRzGAIgAygJUglyZW1vdGVMdHM=');
+
+@$core.Deprecated('Use updateDefaultRunScriptParamsDescriptor instead')
+const UpdateDefaultRunScriptParams$json = {
+  '1': 'UpdateDefaultRunScriptParams',
+  '2': [
+    {'1': 'script', '3': 1, '4': 1, '5': 9, '10': 'script'},
+    {'1': 'id', '3': 2, '4': 1, '5': 5, '10': 'id'},
+  ],
+};
+
+/// Descriptor for `UpdateDefaultRunScriptParams`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List updateDefaultRunScriptParamsDescriptor = $convert.base64Decode(
+    'ChxVcGRhdGVEZWZhdWx0UnVuU2NyaXB0UGFyYW1zEhYKBnNjcmlwdBgBIAEoCVIGc2NyaXB0Eg'
+    '4KAmlkGAIgASgFUgJpZA==');
 

@@ -53,6 +53,10 @@ class NodesClient extends $grpc.Client {
       '/api.Nodes/UpdateNodeScripts',
       ($0.ReadRequest value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.Node.fromBuffer(value));
+  static final _$updateDefaultRunScript = $grpc.ClientMethod<$0.UpdateDefaultRunScriptParams, $0.Node>(
+      '/api.Nodes/UpdateDefaultRunScript',
+      ($0.UpdateDefaultRunScriptParams value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.Node.fromBuffer(value));
 
   NodesClient($grpc.ClientChannel channel,
       {$grpc.CallOptions? options,
@@ -90,6 +94,10 @@ class NodesClient extends $grpc.Client {
 
   $grpc.ResponseFuture<$0.Node> updateNodeScripts($0.ReadRequest request, {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$updateNodeScripts, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.Node> updateDefaultRunScript($0.UpdateDefaultRunScriptParams request, {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$updateDefaultRunScript, request, options: options);
   }
 }
 
@@ -154,6 +162,13 @@ abstract class NodesServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $0.ReadRequest.fromBuffer(value),
         ($0.Node value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.UpdateDefaultRunScriptParams, $0.Node>(
+        'UpdateDefaultRunScript',
+        updateDefaultRunScript_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.UpdateDefaultRunScriptParams.fromBuffer(value),
+        ($0.Node value) => value.writeToBuffer()));
   }
 
   $async.Future<$0.Node> createNode_Pre($grpc.ServiceCall call, $async.Future<$0.CreateRequest> request) async {
@@ -188,6 +203,10 @@ abstract class NodesServiceBase extends $grpc.Service {
     return updateNodeScripts(call, await request);
   }
 
+  $async.Future<$0.Node> updateDefaultRunScript_Pre($grpc.ServiceCall call, $async.Future<$0.UpdateDefaultRunScriptParams> request) async {
+    return updateDefaultRunScript(call, await request);
+  }
+
   $async.Future<$0.Node> createNode($grpc.ServiceCall call, $0.CreateRequest request);
   $async.Future<$0.Node> readNode($grpc.ServiceCall call, $0.ReadRequest request);
   $async.Future<$0.Node> updateNode($grpc.ServiceCall call, $0.CreateRequest request);
@@ -196,6 +215,7 @@ abstract class NodesServiceBase extends $grpc.Service {
   $async.Future<$0.NodeRunTime> runNode($grpc.ServiceCall call, $0.RunNodeRequest request);
   $async.Future<$0.NodeRunTime> stopNode($grpc.ServiceCall call, $0.StopNodeRequest request);
   $async.Future<$0.Node> updateNodeScripts($grpc.ServiceCall call, $0.ReadRequest request);
+  $async.Future<$0.Node> updateDefaultRunScript($grpc.ServiceCall call, $0.UpdateDefaultRunScriptParams request);
 }
 @$pb.GrpcServiceName('api.Environment')
 class EnvironmentClient extends $grpc.Client {
@@ -207,6 +227,14 @@ class EnvironmentClient extends $grpc.Client {
       '/api.Environment/GetNodejsInfo',
       ($0.EmptyParams value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.NodejsVersionsInfo.fromBuffer(value));
+  static final _$updateDefaultNodejsVersion = $grpc.ClientMethod<$0.UpdateDefaultNodejsVersionParams, $0.StatusResponse>(
+      '/api.Environment/UpdateDefaultNodejsVersion',
+      ($0.UpdateDefaultNodejsVersionParams value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.StatusResponse.fromBuffer(value));
+  static final _$downloadNodeJsVersion = $grpc.ClientMethod<$0.RequestVersion, $0.StatusResponse>(
+      '/api.Environment/DownloadNodeJsVersion',
+      ($0.RequestVersion value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.StatusResponse.fromBuffer(value));
 
   EnvironmentClient($grpc.ClientChannel channel,
       {$grpc.CallOptions? options,
@@ -220,6 +248,14 @@ class EnvironmentClient extends $grpc.Client {
 
   $grpc.ResponseFuture<$0.NodejsVersionsInfo> getNodejsInfo($0.EmptyParams request, {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$getNodejsInfo, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.StatusResponse> updateDefaultNodejsVersion($0.UpdateDefaultNodejsVersionParams request, {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$updateDefaultNodejsVersion, request, options: options);
+  }
+
+  $grpc.ResponseStream<$0.StatusResponse> downloadNodeJsVersion($0.RequestVersion request, {$grpc.CallOptions? options}) {
+    return $createStreamingCall(_$downloadNodeJsVersion, $async.Stream.fromIterable([request]), options: options);
   }
 }
 
@@ -242,6 +278,20 @@ abstract class EnvironmentServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $0.EmptyParams.fromBuffer(value),
         ($0.NodejsVersionsInfo value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.UpdateDefaultNodejsVersionParams, $0.StatusResponse>(
+        'UpdateDefaultNodejsVersion',
+        updateDefaultNodejsVersion_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.UpdateDefaultNodejsVersionParams.fromBuffer(value),
+        ($0.StatusResponse value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.RequestVersion, $0.StatusResponse>(
+        'DownloadNodeJsVersion',
+        downloadNodeJsVersion_Pre,
+        false,
+        true,
+        ($core.List<$core.int> value) => $0.RequestVersion.fromBuffer(value),
+        ($0.StatusResponse value) => value.writeToBuffer()));
   }
 
   $async.Stream<$0.ProcessInfo> processStream_Pre($grpc.ServiceCall call, $async.Future<$0.DataRequest> request) async* {
@@ -252,6 +302,16 @@ abstract class EnvironmentServiceBase extends $grpc.Service {
     return getNodejsInfo(call, await request);
   }
 
+  $async.Future<$0.StatusResponse> updateDefaultNodejsVersion_Pre($grpc.ServiceCall call, $async.Future<$0.UpdateDefaultNodejsVersionParams> request) async {
+    return updateDefaultNodejsVersion(call, await request);
+  }
+
+  $async.Stream<$0.StatusResponse> downloadNodeJsVersion_Pre($grpc.ServiceCall call, $async.Future<$0.RequestVersion> request) async* {
+    yield* downloadNodeJsVersion(call, await request);
+  }
+
   $async.Stream<$0.ProcessInfo> processStream($grpc.ServiceCall call, $0.DataRequest request);
   $async.Future<$0.NodejsVersionsInfo> getNodejsInfo($grpc.ServiceCall call, $0.EmptyParams request);
+  $async.Future<$0.StatusResponse> updateDefaultNodejsVersion($grpc.ServiceCall call, $0.UpdateDefaultNodejsVersionParams request);
+  $async.Stream<$0.StatusResponse> downloadNodeJsVersion($grpc.ServiceCall call, $0.RequestVersion request);
 }

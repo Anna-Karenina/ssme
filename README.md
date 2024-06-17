@@ -9,6 +9,7 @@ This repository represents a my pet-project. It's a desktop application that is 
 
 The name of the project was chosen for a reason: **SSME** or **RS-25** is the name of the [main engine of the space shuttle](https://en.wikipedia.org/wiki/RS-25).
 
+This is a helper for launching our nodejs applications.
 
 At first glance it may seem that this is another [forever](https://github.com/foreversd/forever) or [pm2](https://pm2.keymetrics.io/), the feature of this project in *all-in-box* solution including desktop application, and in the future tui.
 
@@ -68,11 +69,9 @@ make generate
 
 ###  DB structure
 
-| id | name | cmds | node_version|
-
-|-----|-------|------------|-------------|
-
-| int |varchar| json_array | varchar |
+| id  |  name |     cmds   | node_version | default_script|
+|-----|-------|------------|--------------|---------------|
+| int |varchar| json_array |   varchar    |    varchar    |
 
   
 
@@ -89,4 +88,4 @@ make generate
 
 7. add npm private repository check
 
-8. add checking node_modules folder and add script to run npm install¸
+8. add checking node_modules folder and add script to run npm install

@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v5.27.0
-// source: api/nodes.proto
+// source: nodes.proto
 
 package apiv1
 
@@ -30,6 +30,7 @@ type NodesClient interface {
 	RunNode(ctx context.Context, in *RunNodeRequest, opts ...grpc.CallOption) (*NodeRunTime, error)
 	StopNode(ctx context.Context, in *StopNodeRequest, opts ...grpc.CallOption) (*NodeRunTime, error)
 	UpdateNodeScripts(ctx context.Context, in *ReadRequest, opts ...grpc.CallOption) (*Node, error)
+	UpdateDefaultRunScript(ctx context.Context, in *UpdateDefaultRunScriptParams, opts ...grpc.CallOption) (*Node, error)
 }
 
 type nodesClient struct {
@@ -112,6 +113,15 @@ func (c *nodesClient) UpdateNodeScripts(ctx context.Context, in *ReadRequest, op
 	return out, nil
 }
 
+func (c *nodesClient) UpdateDefaultRunScript(ctx context.Context, in *UpdateDefaultRunScriptParams, opts ...grpc.CallOption) (*Node, error) {
+	out := new(Node)
+	err := c.cc.Invoke(ctx, "/api.Nodes/UpdateDefaultRunScript", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // NodesServer is the server API for Nodes service.
 // All implementations must embed UnimplementedNodesServer
 // for forward compatibility
@@ -124,6 +134,7 @@ type NodesServer interface {
 	RunNode(context.Context, *RunNodeRequest) (*NodeRunTime, error)
 	StopNode(context.Context, *StopNodeRequest) (*NodeRunTime, error)
 	UpdateNodeScripts(context.Context, *ReadRequest) (*Node, error)
+	UpdateDefaultRunScript(context.Context, *UpdateDefaultRunScriptParams) (*Node, error)
 	mustEmbedUnimplementedNodesServer()
 }
 
@@ -154,6 +165,9 @@ func (UnimplementedNodesServer) StopNode(context.Context, *StopNodeRequest) (*No
 }
 func (UnimplementedNodesServer) UpdateNodeScripts(context.Context, *ReadRequest) (*Node, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateNodeScripts not implemented")
+}
+func (UnimplementedNodesServer) UpdateDefaultRunScript(context.Context, *UpdateDefaultRunScriptParams) (*Node, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateDefaultRunScript not implemented")
 }
 func (UnimplementedNodesServer) mustEmbedUnimplementedNodesServer() {}
 
@@ -312,6 +326,24 @@ func _Nodes_UpdateNodeScripts_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Nodes_UpdateDefaultRunScript_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateDefaultRunScriptParams)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NodesServer).UpdateDefaultRunScript(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.Nodes/UpdateDefaultRunScript",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NodesServer).UpdateDefaultRunScript(ctx, req.(*UpdateDefaultRunScriptParams))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Nodes_ServiceDesc is the grpc.ServiceDesc for Nodes service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -351,9 +383,13 @@ var Nodes_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "UpdateNodeScripts",
 			Handler:    _Nodes_UpdateNodeScripts_Handler,
 		},
+		{
+			MethodName: "UpdateDefaultRunScript",
+			Handler:    _Nodes_UpdateDefaultRunScript_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/nodes.proto",
+	Metadata: "nodes.proto",
 }
 
 // EnvironmentClient is the client API for Environment service.
@@ -362,6 +398,8 @@ var Nodes_ServiceDesc = grpc.ServiceDesc{
 type EnvironmentClient interface {
 	ProcessStream(ctx context.Context, in *DataRequest, opts ...grpc.CallOption) (Environment_ProcessStreamClient, error)
 	GetNodejsInfo(ctx context.Context, in *EmptyParams, opts ...grpc.CallOption) (*NodejsVersionsInfo, error)
+	UpdateDefaultNodejsVersion(ctx context.Context, in *UpdateDefaultNodejsVersionParams, opts ...grpc.CallOption) (*StatusResponse, error)
+	DownloadNodeJsVersion(ctx context.Context, in *RequestVersion, opts ...grpc.CallOption) (Environment_DownloadNodeJsVersionClient, error)
 }
 
 type environmentClient struct {
@@ -413,12 +451,55 @@ func (c *environmentClient) GetNodejsInfo(ctx context.Context, in *EmptyParams, 
 	return out, nil
 }
 
+func (c *environmentClient) UpdateDefaultNodejsVersion(ctx context.Context, in *UpdateDefaultNodejsVersionParams, opts ...grpc.CallOption) (*StatusResponse, error) {
+	out := new(StatusResponse)
+	err := c.cc.Invoke(ctx, "/api.Environment/UpdateDefaultNodejsVersion", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *environmentClient) DownloadNodeJsVersion(ctx context.Context, in *RequestVersion, opts ...grpc.CallOption) (Environment_DownloadNodeJsVersionClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Environment_ServiceDesc.Streams[1], "/api.Environment/DownloadNodeJsVersion", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &environmentDownloadNodeJsVersionClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type Environment_DownloadNodeJsVersionClient interface {
+	Recv() (*TimeLeft, error)
+	grpc.ClientStream
+}
+
+type environmentDownloadNodeJsVersionClient struct {
+	grpc.ClientStream
+}
+
+func (x *environmentDownloadNodeJsVersionClient) Recv() (*TimeLeft, error) {
+	m := new(TimeLeft)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // EnvironmentServer is the server API for Environment service.
 // All implementations must embed UnimplementedEnvironmentServer
 // for forward compatibility
 type EnvironmentServer interface {
 	ProcessStream(*DataRequest, Environment_ProcessStreamServer) error
 	GetNodejsInfo(context.Context, *EmptyParams) (*NodejsVersionsInfo, error)
+	UpdateDefaultNodejsVersion(context.Context, *UpdateDefaultNodejsVersionParams) (*StatusResponse, error)
+	DownloadNodeJsVersion(*RequestVersion, Environment_DownloadNodeJsVersionServer) error
 	mustEmbedUnimplementedEnvironmentServer()
 }
 
@@ -431,6 +512,12 @@ func (UnimplementedEnvironmentServer) ProcessStream(*DataRequest, Environment_Pr
 }
 func (UnimplementedEnvironmentServer) GetNodejsInfo(context.Context, *EmptyParams) (*NodejsVersionsInfo, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetNodejsInfo not implemented")
+}
+func (UnimplementedEnvironmentServer) UpdateDefaultNodejsVersion(context.Context, *UpdateDefaultNodejsVersionParams) (*StatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateDefaultNodejsVersion not implemented")
+}
+func (UnimplementedEnvironmentServer) DownloadNodeJsVersion(*RequestVersion, Environment_DownloadNodeJsVersionServer) error {
+	return status.Errorf(codes.Unimplemented, "method DownloadNodeJsVersion not implemented")
 }
 func (UnimplementedEnvironmentServer) mustEmbedUnimplementedEnvironmentServer() {}
 
@@ -484,6 +571,45 @@ func _Environment_GetNodejsInfo_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Environment_UpdateDefaultNodejsVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateDefaultNodejsVersionParams)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EnvironmentServer).UpdateDefaultNodejsVersion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.Environment/UpdateDefaultNodejsVersion",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EnvironmentServer).UpdateDefaultNodejsVersion(ctx, req.(*UpdateDefaultNodejsVersionParams))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Environment_DownloadNodeJsVersion_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(RequestVersion)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(EnvironmentServer).DownloadNodeJsVersion(m, &environmentDownloadNodeJsVersionServer{stream})
+}
+
+type Environment_DownloadNodeJsVersionServer interface {
+	Send(*TimeLeft) error
+	grpc.ServerStream
+}
+
+type environmentDownloadNodeJsVersionServer struct {
+	grpc.ServerStream
+}
+
+func (x *environmentDownloadNodeJsVersionServer) Send(m *TimeLeft) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // Environment_ServiceDesc is the grpc.ServiceDesc for Environment service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -495,6 +621,10 @@ var Environment_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "GetNodejsInfo",
 			Handler:    _Environment_GetNodejsInfo_Handler,
 		},
+		{
+			MethodName: "UpdateDefaultNodejsVersion",
+			Handler:    _Environment_UpdateDefaultNodejsVersion_Handler,
+		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
@@ -502,6 +632,11 @@ var Environment_ServiceDesc = grpc.ServiceDesc{
 			Handler:       _Environment_ProcessStream_Handler,
 			ServerStreams: true,
 		},
+		{
+			StreamName:    "DownloadNodeJsVersion",
+			Handler:       _Environment_DownloadNodeJsVersion_Handler,
+			ServerStreams: true,
+		},
 	},
-	Metadata: "api/nodes.proto",
+	Metadata: "nodes.proto",
 }

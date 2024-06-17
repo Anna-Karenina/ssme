@@ -3,13 +3,15 @@ package nodesgrpc
 import (
 	"context"
 	"fmt"
+	"log"
+	"slices"
 	"time"
 
 	appsruntime "github.com/Anna-Karenina/sme-engine/internal/app/apps_runtime"
 	"github.com/Anna-Karenina/sme-engine/internal/domain/models"
 	serviceerrors "github.com/Anna-Karenina/sme-engine/internal/services"
 
-	apiv1 "github.com/Anna-Karenina/sme-engine/pkg/gen/api"
+	apiv1 "github.com/Anna-Karenina/sme-engine/pkg/gen"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -24,11 +26,14 @@ type Nodes interface {
 	RunNode(ctx context.Context, payload *appsruntime.RunNodePayload) (node *appsruntime.AppRuntime, err error)
 	StopNode(ctx context.Context, in int) (node *appsruntime.AppRuntime, err error)
 	UpdateNodeScripts(ctx context.Context, id int) (*models.Node, error)
+	UpdateAppDefaultNodeJsVerion(ctx context.Context, id int, version string, updateNvmrc bool) (string, error)
+	UpdateDefaultRunScript(ctx context.Context, id int, script string) (node *models.Node, err error)
 }
 
 type Environment interface {
 	GetDataAboutProcess() (processInfo *models.ProcessInfo, err error)
 	GetNodejsInfo(ctx context.Context) (*models.NodejsVersionsInfo, error)
+	DownloadNodeJsVersion(version string, messageCh chan string)
 }
 
 type serverAPI struct {
@@ -50,7 +55,7 @@ func (s *serverAPI) CreateNode(ctx context.Context, in *apiv1.CreateRequest) (*a
 	if err != nil {
 		return nil, status.Error(codes.Internal, fmt.Sprint(err))
 	}
-	return &apiv1.Node{Path: node.Path, Id: int32(node.Id), Name: node.Name, Scripts: node.Scripts, NodeVersion: node.NodeJsVersion}, nil
+	return mapNodeToApiNode(node), nil
 }
 
 func (s *serverAPI) ReadNode(ctx context.Context, in *apiv1.ReadRequest) (*apiv1.Node, error) {
@@ -62,7 +67,7 @@ func (s *serverAPI) ReadNode(ctx context.Context, in *apiv1.ReadRequest) (*apiv1
 		return nil, status.Error(codes.Internal, "failed to get")
 	}
 
-	return &apiv1.Node{Path: node.Path, Id: int32(node.Id), Name: node.Name, Scripts: node.Scripts}, nil
+	return mapNodeToApiNode(node), nil
 }
 
 func (s *serverAPI) ReadAllNodes(ctx context.Context, ep *apiv1.EmptyParams) (*apiv1.NodeList, error) {
@@ -74,7 +79,7 @@ func (s *serverAPI) ReadAllNodes(ctx context.Context, ep *apiv1.EmptyParams) (*a
 	responseNodes := make([]*apiv1.Node, 0, len(nodes))
 
 	for _, node := range nodes {
-		responseNodes = append(responseNodes, &apiv1.Node{Path: node.Path, Id: int32(node.Id), Name: node.Name, Scripts: node.Scripts, NodeVersion: node.NodeJsVersion})
+		responseNodes = append(responseNodes, mapNodeToApiNode(node))
 	}
 
 	return &apiv1.NodeList{Nodes: responseNodes}, nil
@@ -177,12 +182,7 @@ func (s *serverAPI) UpdateNodeScripts(ctx context.Context, in *apiv1.ReadRequest
 	if err != nil {
 		return nil, status.Error(codes.Internal, fmt.Sprint(err))
 	}
-	return &apiv1.Node{
-		Path:    node.Path,
-		Id:      int32(node.Id),
-		Name:    node.Name,
-		Scripts: node.Scripts,
-	}, nil
+	return mapNodeToApiNode(node), nil
 }
 
 func (s *serverAPI) GetNodejsInfo(ctx context.Context, ep *apiv1.EmptyParams) (*apiv1.NodejsVersionsInfo, error) {
@@ -192,4 +192,67 @@ func (s *serverAPI) GetNodejsInfo(ctx context.Context, ep *apiv1.EmptyParams) (*
 	}
 
 	return &apiv1.NodejsVersionsInfo{Installed: info.Installed, RemoteLts: info.RemoteLts}, nil
+}
+
+func (s *serverAPI) UpdateDefaultNodejsVersion(ctx context.Context, in *apiv1.UpdateDefaultNodejsVersionParams) (*apiv1.StatusResponse, error) {
+	versions, err := s.environment.GetNodejsInfo(ctx)
+	if err != nil || slices.Contains(versions.RemoteLts, in.Version) == false {
+		return nil, status.Error(codes.InvalidArgument, "correct nodejs version should be provided")
+	}
+
+	sts, err := s.nodes.UpdateAppDefaultNodeJsVerion(ctx, int(in.Id), in.Version, in.UpdateNvmrc)
+	if err != nil {
+		return nil, status.Error(codes.NotFound, fmt.Sprint(err))
+	}
+
+	return &apiv1.StatusResponse{Status: sts}, nil
+
+}
+
+func (s *serverAPI) DownloadNodeJsVersion(in *apiv1.RequestVersion, stream apiv1.Environment_DownloadNodeJsVersionServer) error {
+
+	message := make(chan string)
+	defer close(message)
+	go s.environment.DownloadNodeJsVersion(in.Version, message)
+
+	for {
+		msg := <-message
+		if msg == "done" {
+			return nil
+		} else {
+			resp := apiv1.TimeLeft{Left: msg}
+			if err := stream.Send(&resp); err != nil {
+				log.Printf("send error %v", err)
+			}
+		}
+	}
+
+}
+
+func (s *serverAPI) UpdateDefaultRunScript(ctx context.Context, in *apiv1.UpdateDefaultRunScriptParams) (*apiv1.Node, error) {
+	node, err := s.nodes.UpdateDefaultRunScript(ctx, int(in.Id), in.Script)
+
+	if err != nil {
+		return nil, status.Error(codes.NotFound, fmt.Sprint(err))
+	}
+
+	return &apiv1.Node{
+		Id:            int32(node.Id),
+		Path:          node.Path,
+		Name:          node.Name,
+		NodeVersion:   node.NodeJsVersion,
+		Scripts:       node.Scripts,
+		DefaultScript: node.DefaultScript,
+	}, err
+}
+
+func mapNodeToApiNode(node *models.Node) *apiv1.Node {
+	return &apiv1.Node{
+		Id:            int32(node.Id),
+		Path:          node.Path,
+		Name:          node.Name,
+		Scripts:       node.Scripts,
+		NodeVersion:   node.NodeJsVersion,
+		DefaultScript: node.DefaultScript,
+	}
 }

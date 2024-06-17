@@ -70,16 +70,17 @@ func (s *Storage) Read(ctx context.Context, id int) (*models.Node, error) {
 	log := s.log.With(slog.String("op", op), slog.Int("id:", id))
 	log.Info("searching node")
 
-	row := s.db.QueryRowContext(ctx, "SELECT id, path, name, cmds, node_version FROM nodes WHERE id = ?", id)
+	row := s.db.QueryRowContext(ctx, "SELECT id, path, name, cmds, node_version, default_script FROM nodes WHERE id = ?", id)
 
 	var node models.Node
-	err := row.Scan(&node.Id, &node.Path, &node.Name, &node.Scripts, &node.NodeJsVersion)
+	err := row.Scan(&node.Id, &node.Path, &node.Name, &node.Scripts, &node.NodeJsVersion, &node.DefaultScript)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("%s: %w", op, storage.ErrNodeNotFound)
 		}
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
+	node.Scripts = strings.Split(node.Scripts[0], ", ")
 	log.Info("find node")
 	return &node, nil
 }
@@ -93,17 +94,17 @@ func (s *Storage) Update(ctx context.Context, in *models.Node) (*models.Node, er
 
 	log.Info("try update node")
 
-	_, err := s.db.ExecContext(ctx, `UPDATE nodes SET cmds = json_array(?) , node_version = ?  WHERE id = ?`, strings.Join(in.Scripts, ", "), in.NodeJsVersion, in.Id)
+	_, err := s.db.ExecContext(ctx, `UPDATE nodes SET cmds = json_array(?) , node_version = ? , default_script = ?  WHERE id = ?`, strings.Join(in.Scripts, ", "), in.NodeJsVersion, in.DefaultScript, in.Id)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
 	log.Info("node updated success")
 
-	row := s.db.QueryRowContext(ctx, "SELECT id, path, name, cmds FROM nodes WHERE id = ?", in.Id)
+	row := s.db.QueryRowContext(ctx, "SELECT id, path, name, cmds, default_script FROM nodes WHERE id = ?", in.Id)
 
 	var node models.Node
-	err = row.Scan(&node.Id, &node.Path, &node.Name, &node.Scripts)
+	err = row.Scan(&node.Id, &node.Path, &node.Name, &node.Scripts, &node.DefaultScript)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("%s: %w", op, storage.ErrNodeNotFound)
@@ -118,7 +119,7 @@ func (s *Storage) GetAllNodes(ctx context.Context) ([]*models.Node, error) {
 	const op = "storage.sqlite.ReadAllNodes"
 	var nodes []*models.Node
 
-	rows, err := s.db.Query("SELECT id, name, path, cmds, node_version FROM `nodes`")
+	rows, err := s.db.Query("SELECT id, name, path, cmds, node_version, default_script FROM `nodes`")
 
 	if err != nil {
 		return nil, storage.ErrWrongRowParams
@@ -127,7 +128,7 @@ func (s *Storage) GetAllNodes(ctx context.Context) ([]*models.Node, error) {
 	for rows.Next() {
 		var node models.Node
 
-		if err := rows.Scan(&node.Id, &node.Name, &node.Path, &node.Scripts, &node.NodeJsVersion); err != nil {
+		if err := rows.Scan(&node.Id, &node.Name, &node.Path, &node.Scripts, &node.NodeJsVersion, &node.DefaultScript); err != nil {
 			log.Println(err.Error())
 		}
 		log.Println(op, node)
@@ -142,9 +143,9 @@ func (s *Storage) InternalGetNodeById(ctx context.Context, id int) (*models.Node
 	log := s.log.With(slog.String("op", op), slog.Int("id:", id))
 	log.Info("searching node...")
 
-	row := s.db.QueryRowContext(ctx, "SELECT id, path, name, cmds, node_version FROM nodes WHERE id = ?", id)
+	row := s.db.QueryRowContext(ctx, "SELECT id, path, name, cmds, node_version, default_script FROM nodes WHERE id = ?", id)
 	var node models.Node
-	err := row.Scan(&node.Id, &node.Path, &node.Name, &node.Scripts, &node.NodeJsVersion)
+	err := row.Scan(&node.Id, &node.Path, &node.Name, &node.Scripts, &node.NodeJsVersion, &node.DefaultScript)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("%s: %w", op, storage.ErrNodeNotFound)
