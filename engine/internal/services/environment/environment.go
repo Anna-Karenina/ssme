@@ -70,17 +70,14 @@ func (e *Environment) DownloadNodeJsVersion(version string, messageCh chan strin
 	parts := strings.Split(command, " ")
 	cmd := exec.Command(parts[0], parts[1:]...)
 	cmd.Stdout = writer
-	// cmd.Stderr = writer
+	cmd.Stderr = writer
 
 	go func() {
 		defer close(scannerStopped)
 		scanner := bufio.NewScanner(reader)
 		for scanner.Scan() {
 			value := scanner.Bytes()
-
-			fmt.Printf("\n\n text: %s \n\n", value)
 			messageCh <- string(value)
-
 		}
 	}()
 
@@ -89,7 +86,6 @@ func (e *Environment) DownloadNodeJsVersion(version string, messageCh chan strin
 	go func() {
 		_ = cmd.Wait()
 		writer.Close()
-
 	}()
 
 	<-scannerStopped

@@ -23,7 +23,7 @@ service Environment{
   rpc ProcessStream(DataRequest) returns (stream ProcessInfo);
   rpc GetNodejsInfo(EmptyParams) returns (NodejsVersionsInfo);
   rpc UpdateDefaultNodejsVersion(UpdateDefaultNodejsVersionParams) returns (StatusResponse);
-  rpc DownloadNodeJsVersion(RequestVersion) returns (stream TimeLeft);
+  rpc DownloadNodeJsVersion(RequestVersion) returns (stream DownloadStatusResponse);
 }
 
 message EmptyParams {}
@@ -115,6 +115,6 @@ message UpdateDefaultRunScriptParams {
     int32 id      = 2;
 }
 
-message TimeLeft {
-  string left = 1;
+message DownloadStatusResponse {
+  string status = 1;
 }

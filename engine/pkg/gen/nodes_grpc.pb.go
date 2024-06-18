@@ -476,7 +476,7 @@ func (c *environmentClient) DownloadNodeJsVersion(ctx context.Context, in *Reque
 }
 
 type Environment_DownloadNodeJsVersionClient interface {
-	Recv() (*TimeLeft, error)
+	Recv() (*DownloadStatusResponse, error)
 	grpc.ClientStream
 }
 
@@ -484,8 +484,8 @@ type environmentDownloadNodeJsVersionClient struct {
 	grpc.ClientStream
 }
 
-func (x *environmentDownloadNodeJsVersionClient) Recv() (*TimeLeft, error) {
-	m := new(TimeLeft)
+func (x *environmentDownloadNodeJsVersionClient) Recv() (*DownloadStatusResponse, error) {
+	m := new(DownloadStatusResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -598,7 +598,7 @@ func _Environment_DownloadNodeJsVersion_Handler(srv interface{}, stream grpc.Ser
 }
 
 type Environment_DownloadNodeJsVersionServer interface {
-	Send(*TimeLeft) error
+	Send(*DownloadStatusResponse) error
 	grpc.ServerStream
 }
 
@@ -606,7 +606,7 @@ type environmentDownloadNodeJsVersionServer struct {
 	grpc.ServerStream
 }
 
-func (x *environmentDownloadNodeJsVersionServer) Send(m *TimeLeft) error {
+func (x *environmentDownloadNodeJsVersionServer) Send(m *DownloadStatusResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 

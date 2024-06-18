@@ -178,15 +178,12 @@ class _NodeTableState extends State<NodeTable> {
                       key: Key(DateTime.now().toString()),
                       node: node,
                       nodejsVersionsInfo: widget.nodejsVersionsInfo,
-                      onDownloadNodeVersion: onDownloadNodeVersion,
                       saveNewNodeJsVersion: widget.saveNewNodeJsVersion,
                       syncAppData: widget.syncAppData,
                       updateDefaultScript: widget.updateDefaultScript)),
             ),
         icon: const Icon(Icons.more_vert, color: CustomColors.accentColor));
   }
-
-  Future<void> onDownloadNodeVersion(String version) async {}
 
   _buildActionWidget(NodeUi node) {
     switch (node.status) {

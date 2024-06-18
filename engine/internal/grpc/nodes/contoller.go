@@ -217,13 +217,12 @@ func (s *serverAPI) DownloadNodeJsVersion(in *apiv1.RequestVersion, stream apiv1
 
 	for {
 		msg := <-message
+		resp := apiv1.DownloadStatusResponse{Status: msg}
+		if err := stream.Send(&resp); err != nil {
+			log.Printf("send error %v", err)
+		}
 		if msg == "done" {
 			return nil
-		} else {
-			resp := apiv1.TimeLeft{Left: msg}
-			if err := stream.Send(&resp); err != nil {
-				log.Printf("send error %v", err)
-			}
 		}
 	}
 

@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:desktop/dal/models/node_ui.dart';
 import 'package:desktop/pb/nodes.pb.dart';
+import 'package:desktop/presentations/components/nodejs_download_dialog.dart';
 import 'package:desktop/utils/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -9,7 +10,6 @@ class AppSettingsDialog extends StatefulWidget {
   final NodejsVersionsInfo nodejsVersionsInfo;
 
   final Future<void> Function(String, NodeUi) saveNewNodeJsVersion;
-  final Future<void> Function(String) onDownloadNodeVersion;
   final Future<void> Function(int, String, bool) updateDefaultScript;
   final Future<NodeUi?> Function(int) syncAppData;
 
@@ -19,7 +19,6 @@ class AppSettingsDialog extends StatefulWidget {
       required this.syncAppData,
       required this.nodejsVersionsInfo,
       required this.updateDefaultScript,
-      required this.onDownloadNodeVersion,
       required this.saveNewNodeJsVersion});
 
   @override
@@ -47,7 +46,6 @@ class _AppSettingsDialogState extends State<AppSettingsDialog> {
 
   @override
   Widget build(BuildContext context) {
-    print("in dialog v ${widget.node.nodeVersion}");
     return Container(
       padding: const EdgeInsets.only(top: 20.0, left: 10, right: 10),
       decoration: const BoxDecoration(
@@ -97,11 +95,8 @@ class _AppSettingsDialogState extends State<AppSettingsDialog> {
                   style: TextStyle(color: Colors.white70, fontSize: 13),
                 ),
                 initialSelection: _version,
-                onSelected: _nodeJsDowloading
-                    ? (String? version) {
-                        _saveNewNodeJsVersion(version ?? "");
-                      }
-                    : null,
+                onSelected: (String? version) =>
+                    _saveNewNodeJsVersion(version ?? ""),
                 dropdownMenuEntries:
                     widget.nodejsVersionsInfo.remoteLts.map((String value) {
                   return DropdownMenuEntry<String>(
@@ -195,24 +190,27 @@ class _AppSettingsDialogState extends State<AppSettingsDialog> {
   }
 
   _onDownloadNodeVersion(String version) async {
-    try {
-      setState(() => _nodeJsDowloading = true);
-      await widget.onDownloadNodeVersion(version);
-    } catch (e) {
-      print(e);
-    } finally {
-      setState(() => _nodeJsDowloading = false);
-    }
+    setState(() => _nodeJsDowloading = true);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => Dialog(
+          insetPadding: EdgeInsets.zero,
+          alignment: Alignment.center,
+          backgroundColor: CustomColors.drawerColor,
+          child: NodeJsDownloadDialog(
+            version: version,
+          )),
+    );
   }
 
   Future<void> _saveNewNodeJsVersion(String version) async {
     try {
       setState(() => _nodeJsDowloading = true);
-      // await widget.saveNewNodeJsVersion(version, node);
+      await widget.saveNewNodeJsVersion(version, node);
     } catch (e) {
       print(e);
     } finally {
-      // setState(() => _nodeJsDowloading = false);
+      setState(() => _nodeJsDowloading = false);
     }
   }
 }

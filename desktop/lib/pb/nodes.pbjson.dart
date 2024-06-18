@@ -248,3 +248,15 @@ final $typed_data.Uint8List updateDefaultRunScriptParamsDescriptor = $convert.ba
     'ChxVcGRhdGVEZWZhdWx0UnVuU2NyaXB0UGFyYW1zEhYKBnNjcmlwdBgBIAEoCVIGc2NyaXB0Eg'
     '4KAmlkGAIgASgFUgJpZA==');
 
+@$core.Deprecated('Use downloadStatusResponseDescriptor instead')
+const DownloadStatusResponse$json = {
+  '1': 'DownloadStatusResponse',
+  '2': [
+    {'1': 'status', '3': 1, '4': 1, '5': 9, '10': 'status'},
+  ],
+};
+
+/// Descriptor for `DownloadStatusResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List downloadStatusResponseDescriptor = $convert.base64Decode(
+    'ChZEb3dubG9hZFN0YXR1c1Jlc3BvbnNlEhYKBnN0YXR1cxgBIAEoCVIGc3RhdHVz');
+

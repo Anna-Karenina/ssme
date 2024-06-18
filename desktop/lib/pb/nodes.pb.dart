@@ -1105,6 +1105,56 @@ class UpdateDefaultRunScriptParams extends $pb.GeneratedMessage {
   void clearId() => clearField(2);
 }
 
+class DownloadStatusResponse extends $pb.GeneratedMessage {
+  factory DownloadStatusResponse({
+    $core.String? status,
+  }) {
+    final $result = create();
+    if (status != null) {
+      $result.status = status;
+    }
+    return $result;
+  }
+  DownloadStatusResponse._() : super();
+  factory DownloadStatusResponse.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory DownloadStatusResponse.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'DownloadStatusResponse', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'status')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  DownloadStatusResponse clone() => DownloadStatusResponse()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  DownloadStatusResponse copyWith(void Function(DownloadStatusResponse) updates) => super.copyWith((message) => updates(message as DownloadStatusResponse)) as DownloadStatusResponse;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static DownloadStatusResponse create() => DownloadStatusResponse._();
+  DownloadStatusResponse createEmptyInstance() => create();
+  static $pb.PbList<DownloadStatusResponse> createRepeated() => $pb.PbList<DownloadStatusResponse>();
+  @$core.pragma('dart2js:noInline')
+  static DownloadStatusResponse getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<DownloadStatusResponse>(create);
+  static DownloadStatusResponse? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get status => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set status($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasStatus() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearStatus() => clearField(1);
+}
+
 
 const _omitFieldNames = $core.bool.fromEnvironment('protobuf.omit_field_names');
 const _omitMessageNames = $core.bool.fromEnvironment('protobuf.omit_message_names');
