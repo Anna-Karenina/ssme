@@ -61,7 +61,7 @@ class _NodeTableState extends State<NodeTable> {
       defaultsRowHeight: 50,
       headerHeight: 50,
       defaultsColumnWidth: 150,
-      scrollShadowColor: CustomColors.accentColor.withOpacity(0.4),
+      scrollShadowColor: CustomColors.accentColor.withOpacity(0.1),
       scrollShadowSize: 3,
       visibleScrollbar: true,
     );
@@ -196,7 +196,7 @@ class _NodeTableState extends State<NodeTable> {
         if (!widget.nodejsVersionsInfo.installed.contains(node.nodeVersion)) {
           return Tooltip(
             message:
-                "required node ${node.nodeVersion}, but it's not installed",
+                "required node  ${node.nodeVersion == '' ? 'unknown version' : node.nodeVersion}, but it's not installed",
             child: IconButton(
                 onPressed: () => widget.runApp(node),
                 icon: const Icon(
@@ -229,7 +229,8 @@ class DefaultCellCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         border: Border(
-            bottom: BorderSide(color: Colors.white.withOpacity(.5), width: 1)),
+            bottom:
+                BorderSide(color: Colors.white.withOpacity(.5), width: 0.5)),
         color: CustomColors.drawerColor,
       ),
       padding: const EdgeInsets.symmetric(horizontal: 0),

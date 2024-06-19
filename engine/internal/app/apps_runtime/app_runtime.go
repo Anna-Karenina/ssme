@@ -11,8 +11,9 @@ type AppRuntimeActions interface {
 }
 
 type RunNodePayload struct {
-	Id      int
-	Command string
+	Id          int
+	Command     string
+	NodeVersion string
 }
 
 type AppRuntime struct {

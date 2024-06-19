@@ -1,7 +1,9 @@
 import 'package:desktop/dal/models/node_ui.dart';
 import 'package:desktop/di/di.dart';
 import 'package:desktop/pb/nodes.pb.dart';
-import 'package:desktop/presentations/components/new_node_form.dart';
+import 'package:desktop/presentations/components/edit_node_form.dart';
+import 'package:desktop/utils/colors.dart';
+import 'package:desktop/utils/inc_key.dart';
 import 'package:flutter/material.dart';
 
 class Nodes extends StatefulWidget {
@@ -14,11 +16,21 @@ class Nodes extends StatefulWidget {
 class _NodesState extends State<Nodes> {
   final grpc = DiManager.getgRpc();
   List<NodeUi> nodes = [];
+  NodeUi? _selectedNode;
+  String _editNodeFormKey = "0";
+
+  final searchController = TextEditingController();
 
   @override
   void initState() {
     asyncInit();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -35,6 +47,28 @@ class _NodesState extends State<Nodes> {
             textAlign: TextAlign.start,
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12.0),
+          child: SizedBox(
+              width: 200,
+              height: 35,
+              child: TextField(
+                decoration: const InputDecoration(
+                  focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: CustomColors.accentBlue)),
+                  contentPadding: EdgeInsets.symmetric(vertical: 1),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: CustomColors.accentColor,
+                    size: 20,
+                  ),
+                  labelText: 'Search',
+                ),
+                style:
+                    const TextStyle(fontSize: 13, fontWeight: FontWeight.w400),
+                controller: searchController,
+              )),
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,17 +79,20 @@ class _NodesState extends State<Nodes> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                      height: 500,
+                      height: 480,
                       width: double.infinity,
                       child: SingleChildScrollView(
                         child: Wrap(spacing: 8, children: [
-                          const ChoiceChip(
-                            selected: true,
-                            label: Text("New Node"),
+                          ChoiceChip(
+                            selected: _selectedNode == null,
+                            onSelected: (_) => _selectNode(null),
+                            label: const Text("New Node"),
                           ),
                           ...nodes
                               .map((item) => ChoiceChip(
-                                    selected: false,
+                                    onSelected: (_) => _selectNode(item),
+                                    selected:
+                                        item.id == _selectedNode?.id ?? false,
                                     label: Text(item.name),
                                   ))
                               .toList(),
@@ -67,6 +104,8 @@ class _NodesState extends State<Nodes> {
             SizedBox(
                 width: 300,
                 child: EditNodeForm(
+                  key: Key(_editNodeFormKey),
+                  selectedNode: _selectedNode,
                   onSubmit: _createNode,
                 )),
           ],
@@ -83,12 +122,18 @@ class _NodesState extends State<Nodes> {
   Future<void> asyncInit() async {
     try {
       final apiNodes = await grpc.nodeClient!.readAllNodes(EmptyParams());
-
-      setState(() => nodes = nodesUifromRequest(apiNodes));
+      setState(() => nodes = nodesUifromRequest(apiNodes).toList());
     } catch (e) {
       print(e.toString());
     } finally {
       setState(() {});
     }
+  }
+
+  void _selectNode(NodeUi? node) {
+    setState(() {
+      _selectedNode = node;
+      incKey(_editNodeFormKey);
+    });
   }
 }

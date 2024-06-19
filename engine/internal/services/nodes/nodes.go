@@ -129,9 +129,9 @@ func (n *Node) StopNode(ctx context.Context, id int) (*appsruntime.AppRuntime, e
 	return node, nil
 }
 
-func (n *Node) UpdateNodeScripts(ctx context.Context, id int) (*models.Node, error) {
+func (n *Node) SyncAppScripts(ctx context.Context, id int) (*models.Node, error) {
 	log := n.log.With(slog.String("op", op))
-	log.Info("update node scripts")
+	log.Info("sync node scripts")
 
 	node, err := n.nodeCRUD.Read(ctx, id)
 	if err != nil {
@@ -150,6 +150,7 @@ func (n *Node) UpdateNodeScripts(ctx context.Context, id int) (*models.Node, err
 	}
 	return node, nil
 }
+
 func (n *Node) UpdateAppDefaultNodeJsVerion(ctx context.Context, id int, version string, updateNvmrc bool) (string, error) {
 
 	node, err := n.nodeCRUD.InternalGetNodeById(ctx, id)

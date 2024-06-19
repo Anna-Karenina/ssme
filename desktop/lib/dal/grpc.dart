@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:desktop/pb/nodes.pbgrpc.dart';
 import 'package:grpc/grpc.dart';
 
-const host = '192.168.0.105';
+const host = 'localhost';
 const port = 44044;
 
 class GrpcClient {

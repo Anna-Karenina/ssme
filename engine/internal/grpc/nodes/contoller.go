@@ -25,7 +25,7 @@ type Nodes interface {
 
 	RunNode(ctx context.Context, payload *appsruntime.RunNodePayload) (node *appsruntime.AppRuntime, err error)
 	StopNode(ctx context.Context, in int) (node *appsruntime.AppRuntime, err error)
-	UpdateNodeScripts(ctx context.Context, id int) (*models.Node, error)
+	SyncAppScripts(ctx context.Context, id int) (*models.Node, error)
 	UpdateAppDefaultNodeJsVerion(ctx context.Context, id int, version string, updateNvmrc bool) (string, error)
 	UpdateDefaultRunScript(ctx context.Context, id int, script string) (node *models.Node, err error)
 }
@@ -86,13 +86,23 @@ func (s *serverAPI) ReadAllNodes(ctx context.Context, ep *apiv1.EmptyParams) (*a
 }
 
 func (s *serverAPI) RunNode(ctx context.Context, in *apiv1.RunNodeRequest) (*apiv1.NodeRunTime, error) {
+	version := ""
 	if in.Command == "" {
 		return nil, status.Error(codes.InvalidArgument, "command should be provided")
 	}
 	if in.Id == 0 {
 		return nil, status.Error(codes.InvalidArgument, "id should be provided")
 	}
-	payload := &appsruntime.RunNodePayload{Id: int(in.Id), Command: in.Command}
+
+	if in.NodeVersion == "" {
+		node, err := s.nodes.ReadNode(ctx, int(in.Id))
+		if err != nil {
+			fmt.Println("smt goes wrong in ctrl run node func ")
+		}
+		version = node.NodeJsVersion
+	}
+
+	payload := &appsruntime.RunNodePayload{Id: int(in.Id), Command: in.Command, NodeVersion: version}
 	n, err := s.nodes.RunNode(ctx, payload)
 	if err != nil {
 		return nil, status.Error(codes.Internal, fmt.Sprint(err))
@@ -177,8 +187,8 @@ func (s *serverAPI) ProcessStream(req *apiv1.DataRequest, stream apiv1.Environme
 	}
 }
 
-func (s *serverAPI) UpdateNodeScripts(ctx context.Context, in *apiv1.ReadRequest) (*apiv1.Node, error) {
-	node, err := s.nodes.UpdateNodeScripts(ctx, int(in.Id))
+func (s *serverAPI) SyncAppScripts(ctx context.Context, in *apiv1.ReadRequest) (*apiv1.Node, error) {
+	node, err := s.nodes.SyncAppScripts(ctx, int(in.Id))
 	if err != nil {
 		return nil, status.Error(codes.Internal, fmt.Sprint(err))
 	}

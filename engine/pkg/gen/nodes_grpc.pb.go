@@ -29,7 +29,7 @@ type NodesClient interface {
 	ReadAllNodes(ctx context.Context, in *EmptyParams, opts ...grpc.CallOption) (*NodeList, error)
 	RunNode(ctx context.Context, in *RunNodeRequest, opts ...grpc.CallOption) (*NodeRunTime, error)
 	StopNode(ctx context.Context, in *StopNodeRequest, opts ...grpc.CallOption) (*NodeRunTime, error)
-	UpdateNodeScripts(ctx context.Context, in *ReadRequest, opts ...grpc.CallOption) (*Node, error)
+	SyncAppScripts(ctx context.Context, in *ReadRequest, opts ...grpc.CallOption) (*Node, error)
 	UpdateDefaultRunScript(ctx context.Context, in *UpdateDefaultRunScriptParams, opts ...grpc.CallOption) (*Node, error)
 }
 
@@ -104,9 +104,9 @@ func (c *nodesClient) StopNode(ctx context.Context, in *StopNodeRequest, opts ..
 	return out, nil
 }
 
-func (c *nodesClient) UpdateNodeScripts(ctx context.Context, in *ReadRequest, opts ...grpc.CallOption) (*Node, error) {
+func (c *nodesClient) SyncAppScripts(ctx context.Context, in *ReadRequest, opts ...grpc.CallOption) (*Node, error) {
 	out := new(Node)
-	err := c.cc.Invoke(ctx, "/api.Nodes/UpdateNodeScripts", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.Nodes/SyncAppScripts", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +133,7 @@ type NodesServer interface {
 	ReadAllNodes(context.Context, *EmptyParams) (*NodeList, error)
 	RunNode(context.Context, *RunNodeRequest) (*NodeRunTime, error)
 	StopNode(context.Context, *StopNodeRequest) (*NodeRunTime, error)
-	UpdateNodeScripts(context.Context, *ReadRequest) (*Node, error)
+	SyncAppScripts(context.Context, *ReadRequest) (*Node, error)
 	UpdateDefaultRunScript(context.Context, *UpdateDefaultRunScriptParams) (*Node, error)
 	mustEmbedUnimplementedNodesServer()
 }
@@ -163,8 +163,8 @@ func (UnimplementedNodesServer) RunNode(context.Context, *RunNodeRequest) (*Node
 func (UnimplementedNodesServer) StopNode(context.Context, *StopNodeRequest) (*NodeRunTime, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StopNode not implemented")
 }
-func (UnimplementedNodesServer) UpdateNodeScripts(context.Context, *ReadRequest) (*Node, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateNodeScripts not implemented")
+func (UnimplementedNodesServer) SyncAppScripts(context.Context, *ReadRequest) (*Node, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SyncAppScripts not implemented")
 }
 func (UnimplementedNodesServer) UpdateDefaultRunScript(context.Context, *UpdateDefaultRunScriptParams) (*Node, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDefaultRunScript not implemented")
@@ -308,20 +308,20 @@ func _Nodes_StopNode_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Nodes_UpdateNodeScripts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Nodes_SyncAppScripts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ReadRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NodesServer).UpdateNodeScripts(ctx, in)
+		return srv.(NodesServer).SyncAppScripts(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Nodes/UpdateNodeScripts",
+		FullMethod: "/api.Nodes/SyncAppScripts",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodesServer).UpdateNodeScripts(ctx, req.(*ReadRequest))
+		return srv.(NodesServer).SyncAppScripts(ctx, req.(*ReadRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -380,8 +380,8 @@ var Nodes_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Nodes_StopNode_Handler,
 		},
 		{
-			MethodName: "UpdateNodeScripts",
-			Handler:    _Nodes_UpdateNodeScripts_Handler,
+			MethodName: "SyncAppScripts",
+			Handler:    _Nodes_SyncAppScripts_Handler,
 		},
 		{
 			MethodName: "UpdateDefaultRunScript",

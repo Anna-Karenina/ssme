@@ -14,7 +14,7 @@ service Nodes {
 
   rpc RunNode(RunNodeRequest) returns (NodeRunTime);
   rpc StopNode(StopNodeRequest) returns (NodeRunTime);
-  rpc UpdateNodeScripts(ReadRequest) returns(Node);
+  rpc SyncAppScripts(ReadRequest) returns(Node);
   rpc UpdateDefaultRunScript(UpdateDefaultRunScriptParams) returns (Node);
 }
 
@@ -74,8 +74,9 @@ message StopNodeRequest  {
 }
 
 message RunNodeRequest {
-  int32 id       = 1;
-  string command = 2;
+  int32 id           = 1;
+  string command     = 2;
+  string nodeVersion = 3;
 }
 
 message NodeRunTime {

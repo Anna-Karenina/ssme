@@ -79,7 +79,7 @@ func (a *AppsRunTimeService) RunNode(ctx context.Context, payload *appsruntime.R
 		return nil, fmt.Errorf("%s: %w", op, serviceerrors.ErrRuningScriptDidNotExist)
 	}
 
-	command := fmt.Sprintf("npm run --prefix %s %s", node.Path, payload.Command)
+	command := fmt.Sprintf("fnm exec --using=%s npm  run --prefix %s %s", payload.NodeVersion, node.Path, payload.Command)
 	parts := strings.Split(command, " ")
 
 	l, err := os.Create(fmt.Sprintf("%s.log", node.Name)) //rewrite

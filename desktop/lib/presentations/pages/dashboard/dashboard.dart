@@ -4,6 +4,7 @@ import 'package:desktop/di/di.dart';
 import 'package:desktop/pb/nodes.pbgrpc.dart';
 import 'package:desktop/presentations/components/node_table.dart';
 import 'package:desktop/utils/colors.dart';
+import 'package:desktop/utils/inc_key.dart';
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 
@@ -34,9 +35,9 @@ class _DashboardState extends State<Dashboard> {
 
   List<NodeUi> nodes = [];
   bool _isTableLoading = true;
-  Key _tableKey = Key("1");
+  String _tableKey = "0";
 
-  EnviromentUi _enviroment = EnviromentUi(cpu: "", mem: "0%", quantity: "");
+  EnviromentUi _enviroment = EnviromentUi(cpu: "0%", mem: "0%", quantity: "0");
   NodejsVersionsInfo _nodejsVersionsInfo =
       NodejsVersionsInfo(installed: [], remoteLts: []);
 
@@ -190,8 +191,7 @@ class _DashboardState extends State<Dashboard> {
                         activeColor: CustomColors.accentBlue,
                         inactiveTrackColor: Colors.transparent,
                         inactiveThumbColor: CustomColors.accentColor,
-                        onChanged: (bool value) =>
-                            setState(() => _onlyActive = value),
+                        onChanged: _toggleOnlyActive,
                       ),
                     ),
                   )
@@ -255,7 +255,7 @@ class _DashboardState extends State<Dashboard> {
                 child: Container(
                   color: Colors.transparent,
                   child: NodeTable(
-                      key: _tableKey,
+                      key: Key(_tableKey),
                       runApp: _runApp,
                       stopApp: _stopApp,
                       columns: columns,
@@ -283,7 +283,6 @@ class _DashboardState extends State<Dashboard> {
 
       final apiNodes = await grpc.nodeClient!.readAllNodes(EmptyParams());
       setState(() => nodes = nodesUifromRequest(apiNodes));
-      print(nodes);
     } catch (e) {
       print(e.toString());
     } finally {
@@ -312,7 +311,7 @@ class _DashboardState extends State<Dashboard> {
       final newNodes = nodes.map((n) => n.id == node.id ? node : n).toList();
       setState(() {
         nodes = newNodes;
-        _tableKey = Key("${_tableKey}1");
+        _tableKey = incKey(_tableKey);
       });
     } catch (e) {
       print(e.toString());
@@ -327,7 +326,7 @@ class _DashboardState extends State<Dashboard> {
       final newNodes = nodes.map((n) => n.id == node.id ? node : n).toList();
       setState(() {
         nodes = newNodes;
-        _tableKey = Key("${_tableKey}1");
+        _tableKey = incKey(_tableKey);
       });
     } catch (e) {
       print(e.toString());
@@ -349,7 +348,7 @@ class _DashboardState extends State<Dashboard> {
         }).toList();
         if (mounted) {
           setState(() {
-            _tableKey = Key("${_tableKey}1");
+            _tableKey = incKey(_tableKey);
             nodes = newNodes;
             _enviroment = EnviromentUi(
                 cpu: message.environment.cpu,
@@ -475,12 +474,20 @@ class _DashboardState extends State<Dashboard> {
 
       if (mounted) {
         setState(() {
-          _tableKey = Key("${_tableKey}1");
+          _tableKey = incKey(_tableKey);
           nodes = newNodes;
         });
       }
     } catch (e) {
       print(e);
     }
+  }
+
+  void _toggleOnlyActive(bool value) {
+    setState(() {
+      _onlyActive = value;
+      // nodes = nodes.where((node) => node.status == 'runnnig').toList();
+      _tableKey = incKey(_tableKey);
+    });
   }
 }

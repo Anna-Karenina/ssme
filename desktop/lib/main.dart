@@ -45,10 +45,14 @@ class _Rs25AppState extends State<Rs25App> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
           useMaterial3: true,
-          chipTheme: const ChipThemeData(
+          chipTheme: ChipThemeData(
             showCheckmark: false,
-            color: ChipBackgroundColor(),
-            labelStyle: TextStyle(color: Colors.white),
+            color: const ChipBackgroundColor(),
+            labelStyle: const TextStyle(color: Colors.white),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: const BorderSide(color: CustomColors.accentBlue),
+            ),
           ),
           textTheme: Typography.whiteCupertino,
           inputDecorationTheme: InputDecorationTheme(
@@ -102,7 +106,6 @@ class _Rs25AppState extends State<Rs25App> {
       await grpc.connectgRpc();
 
       grpc.stream.listen((event) {
-        print(event);
         if (event == GRPCLIB.ConnectionState.ready) {
           setState(() => _engineIsRunning = true);
         } else if ([
