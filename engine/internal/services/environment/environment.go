@@ -35,6 +35,19 @@ func New(log *slog.Logger, runTimeStorage *appsruntime.AppsStorage) *Environment
 	return &Environment{log: log, runTimeStorage: runTimeStorage}
 }
 
+func (e *Environment) CheckAppPathIsExist(ctx context.Context, appPath string) (bool, error) {
+	log := e.log.With(slog.String("op", op), slog.String(".path", appPath))
+	log.Info("checking path is exist...")
+	_, err := os.Stat(appPath)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
+}
+
 func (e *Environment) UpdateNodejsVersionInRcFile(ctx context.Context, appPath string, version string) error {
 	log := e.log.With(slog.String("op", op), slog.String(".path", appPath))
 	log.Info("try update .node_version or .nvmrc files")

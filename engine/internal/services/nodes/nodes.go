@@ -22,6 +22,7 @@ type EnvService interface {
 	ParseAppPkgJson(appPath string) (*models.AppPkgJson, error)
 	ParseProjectNodeJsVersionFile(appPath string) (string, error)
 	UpdateNodejsVersionInRcFile(ctx context.Context, filePath string, version string) error
+	CheckAppPathIsExist(ctx context.Context, appPath string) (bool, error)
 }
 
 type NodeActions interface {
@@ -57,22 +58,32 @@ func (n *Node) CreateNode(ctx context.Context, path string, name string) (*model
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	pkgInfo, err := n.envService.ParseAppPkgJson(path)
+	pathExist, err := n.envService.CheckAppPathIsExist(ctx, path)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	defaultNodeJsversion, err := n.envService.ParseProjectNodeJsVersionFile(path)
-	if err != nil {
-		defaultNodeJsversion = "v20.14.0"
-	}
+	if pathExist {
+		node.IsAppValid = pathExist
+		pkgInfo, err := n.envService.ParseAppPkgJson(path)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", op, err)
+		}
 
-	node.NodeJsVersion = defaultNodeJsversion
-	node.Scripts = pkgInfo.Scripts
+		defaultNodeJsVersion, err := n.envService.ParseProjectNodeJsVersionFile(path)
+		if err != nil {
+			defaultNodeJsVersion = "v20.14.0"
+		}
 
-	node, err = n.nodeCRUD.Update(ctx, node)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", op, err)
+		node.NodeJsVersion = defaultNodeJsVersion
+		node.Scripts = pkgInfo.Scripts
+
+		node, err = n.nodeCRUD.Update(ctx, node)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", op, err)
+		}
+	} else {
+		node.IsAppValid = pathExist
 	}
 
 	log.Info("created node:", slog.String("path", path))
@@ -89,6 +100,13 @@ func (n *Node) ReadNode(ctx context.Context, id int) (*models.Node, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
+
+	pathExist, err := n.envService.CheckAppPathIsExist(ctx, node.Path)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	node.IsAppValid = pathExist
 
 	return node, nil
 }

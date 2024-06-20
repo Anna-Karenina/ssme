@@ -7,7 +7,7 @@ import (
 	"net"
 
 	appsruntime "github.com/Anna-Karenina/sme-engine/internal/app/apps_runtime"
-	nodesgrpc "github.com/Anna-Karenina/sme-engine/internal/grpc/nodes"
+	nodesgrpc "github.com/Anna-Karenina/sme-engine/internal/grpc"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	"google.golang.org/grpc"

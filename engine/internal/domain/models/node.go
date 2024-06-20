@@ -27,4 +27,5 @@ type Node struct {
 	Scripts       Scripts `db:"cmds" json:"scripts"`
 	NodeJsVersion string  `db:"node_version"`
 	DefaultScript string  `db:"default_script"`
+	IsAppValid    bool
 }

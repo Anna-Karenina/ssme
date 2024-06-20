@@ -263,5 +263,6 @@ func mapNodeToApiNode(node *models.Node) *apiv1.Node {
 		Scripts:       node.Scripts,
 		NodeVersion:   node.NodeJsVersion,
 		DefaultScript: node.DefaultScript,
+		IsAppValid:    node.IsAppValid,
 	}
 }
