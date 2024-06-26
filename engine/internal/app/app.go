@@ -6,9 +6,9 @@ import (
 
 	appsruntime "github.com/Anna-Karenina/sme-engine/internal/app/apps_runtime"
 	grpcapp "github.com/Anna-Karenina/sme-engine/internal/app/grpc"
-	appsruntimeservice "github.com/Anna-Karenina/sme-engine/internal/services/apps_run_time"
+	"github.com/Anna-Karenina/sme-engine/internal/services/apps"
+	apps_runtime_service "github.com/Anna-Karenina/sme-engine/internal/services/apps_run_time"
 	"github.com/Anna-Karenina/sme-engine/internal/services/environment"
-	"github.com/Anna-Karenina/sme-engine/internal/services/nodes"
 	"github.com/Anna-Karenina/sme-engine/internal/storage/sqlite"
 )
 
@@ -28,14 +28,14 @@ func New(
 	}
 
 	appsStorage := appsruntime.NewAppsStorage()
-	runTimeAppsService := appsruntimeservice.NewAppsRunTimeService(log, appsStorage, storage)
+	runTimeAppsService := apps_runtime_service.NewAppsRunTimeService(log, appsStorage, storage)
 
 	environmentService := environment.New(log, appsStorage)
-	nodesService := nodes.New(log, storage, runTimeAppsService, environmentService)
+	appsService := apps.New(log, storage, runTimeAppsService, environmentService)
 
-	putExistingNodesToStorage(nodesService, runTimeAppsService, appsStorage)
+	putExistingNodesToStorage(appsService, runTimeAppsService, appsStorage)
 
-	grpcApp := grpcapp.New(log, nodesService, environmentService, appsStorage, grpcPort)
+	grpcApp := grpcapp.New(log, appsService, environmentService, appsStorage, grpcPort)
 
 	return &App{
 		GRPCServer:  grpcApp,
@@ -43,9 +43,9 @@ func New(
 	}
 }
 
-func putExistingNodesToStorage(nodesService *nodes.Node, runTimeAppsService *appsruntimeservice.AppsRunTimeService, appsStorage *appsruntime.AppsStorage) {
+func putExistingNodesToStorage(appsService *apps.Apps, runTimeAppsService *apps_runtime_service.AppsRunTimeService, appsStorage *appsruntime.AppsStorage) {
 	ctx := context.TODO()
-	nodes, _ := nodesService.ReadAllNodes(ctx)
+	nodes, _ := appsService.ReadAllApps(ctx)
 	for _, node := range nodes {
 		app := appsruntime.NewAppRunTime(
 			runTimeAppsService, node.Id,

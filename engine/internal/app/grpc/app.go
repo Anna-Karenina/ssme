@@ -7,7 +7,7 @@ import (
 	"net"
 
 	appsruntime "github.com/Anna-Karenina/sme-engine/internal/app/apps_runtime"
-	nodesgrpc "github.com/Anna-Karenina/sme-engine/internal/grpc"
+	grpc_controller "github.com/Anna-Karenina/sme-engine/internal/grpc"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	"google.golang.org/grpc"
@@ -23,8 +23,8 @@ type App struct {
 
 func New(
 	log *slog.Logger,
-	nodesService nodesgrpc.Nodes,
-	environmentService nodesgrpc.Environment,
+	appsService grpc_controller.Apps,
+	environmentService grpc_controller.Environment,
 	appsStorage *appsruntime.AppsStorage,
 	port int,
 ) *App {
@@ -54,7 +54,7 @@ func New(
 		),
 	)
 
-	nodesgrpc.Register(gRPCServer, nodesService, environmentService, appsStorage)
+	grpc_controller.Register(gRPCServer, appsService, environmentService, appsStorage)
 
 	return &App{
 		log:        log,

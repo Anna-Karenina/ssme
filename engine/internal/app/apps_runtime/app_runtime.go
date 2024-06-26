@@ -7,10 +7,10 @@ import (
 )
 
 type AppRuntimeActions interface {
-	RunNode(ctx context.Context, payload *RunNodePayload) (*AppRuntime, error)
+	RunApp(ctx context.Context, payload *RunAppPayload) (*AppRuntime, error)
 }
 
-type RunNodePayload struct {
+type RunAppPayload struct {
 	Id          int
 	Command     string
 	NodeVersion string

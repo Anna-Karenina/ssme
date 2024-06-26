@@ -1,6 +1,6 @@
-import 'package:desktop/pb/nodes.pb.dart';
+import 'package:desktop/pb/api.pb.dart';
 
-class NodeUi {
+class AppUi {
   final int id;
   final String name;
   final String path;
@@ -16,7 +16,7 @@ class NodeUi {
   final bool isAppValid;
   final List<String> scripts;
 
-  NodeUi(
+  AppUi(
       {required this.id,
       required this.name,
       required this.path,
@@ -33,10 +33,10 @@ class NodeUi {
       required this.isAppValid});
 }
 
-List<NodeUi> nodesUifromRequest(NodeList list) {
-  List<NodeUi> temp = [];
-  for (var e in list.nodes) {
-    temp.add(NodeUi(
+List<AppUi> nodesUifromRequest(AppList list) {
+  List<AppUi> temp = [];
+  for (var e in list.apps) {
+    temp.add(AppUi(
       id: e.id,
       name: e.name,
       path: e.path,
@@ -57,7 +57,7 @@ List<NodeUi> nodesUifromRequest(NodeList list) {
   return temp;
 }
 
-NodeUi nodeUiFromRequest(NodeRunTime nodeRt, NodeUi currentNode) => NodeUi(
+AppUi nodeUiFromRequest(AppRunTime nodeRt, AppUi currentNode) => AppUi(
     id: nodeRt.id,
     status: nodeRt.status,
     pid: nodeRt.pid.toString(),

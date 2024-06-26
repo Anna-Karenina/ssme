@@ -38,7 +38,7 @@ func (s *Storage) Stop() error {
 }
 
 func (s *Storage) Create(ctx context.Context, path string, name string) (*models.Node, error) {
-	const op = "storage.sqlite.CreateNode"
+	const op = "storage.sqlite.CreateApp"
 	log := s.log.With(slog.String("op", op), slog.String(".path", path), slog.String(".name", name))
 
 	stmt, err := s.db.Prepare("INSERT INTO nodes(path, name) VALUES(?, ?)")
@@ -90,7 +90,8 @@ func (s *Storage) Update(ctx context.Context, in *models.Node) (*models.Node, er
 	log := s.log.With(
 		slog.String("op", op),
 		slog.String(".version", in.NodeJsVersion),
-		slog.String(".scripts", strings.Join(in.Scripts, ", ")))
+		slog.String(".scripts", strings.Join(in.Scripts, ", ")),
+		slog.String(".default srcipt", in.DefaultScript))
 
 	log.Info("try update node")
 
@@ -115,8 +116,8 @@ func (s *Storage) Update(ctx context.Context, in *models.Node) (*models.Node, er
 	return &node, nil
 }
 
-func (s *Storage) GetAllNodes(ctx context.Context) ([]*models.Node, error) {
-	const op = "storage.sqlite.ReadAllNodes"
+func (s *Storage) GetAllApps(ctx context.Context) ([]*models.Node, error) {
+	const op = "storage.sqlite.ReadAllApps"
 	var nodes []*models.Node
 
 	rows, err := s.db.Query("SELECT id, name, path, cmds, node_version, default_script FROM `nodes`")

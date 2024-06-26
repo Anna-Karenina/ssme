@@ -4,7 +4,7 @@ import 'package:desktop/di/di.dart';
 import 'package:desktop/presentations/components/sidebar.dart';
 import 'package:desktop/presentations/pages/dashboard/dashboard.dart';
 import 'package:desktop/presentations/pages/disconnected/disconnected.dart';
-import 'package:desktop/presentations/pages/nodes/nodes.dart';
+import 'package:desktop/presentations/pages/apps/apps.dart';
 import 'package:desktop/presentations/pages/npm/npm.dart';
 import 'package:desktop/utils/colors.dart';
 import 'package:flutter/material.dart';

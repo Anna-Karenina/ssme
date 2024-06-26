@@ -1,4 +1,4 @@
-package appsruntimeservice
+package apps_runtime_service
 
 import (
 	"bufio"
@@ -36,7 +36,7 @@ func NewAppsRunTimeService(
 	return &AppsRunTimeService{log: log, runTimeStorage: runTimeStorage, repository: repository}
 }
 
-func (a *AppsRunTimeService) StopNode(ctx context.Context, id int) (*appsruntime.AppRuntime, error) {
+func (a *AppsRunTimeService) StopApp(ctx context.Context, id int) (*appsruntime.AppRuntime, error) {
 	log := a.log.With(slog.String("op", op), slog.Int(".id", id))
 
 	node, err := a.repository.InternalGetNodeById(ctx, id)
@@ -65,7 +65,7 @@ func (a *AppsRunTimeService) StopNode(ctx context.Context, id int) (*appsruntime
 	}, nil
 }
 
-func (a *AppsRunTimeService) RunNode(ctx context.Context, payload *appsruntime.RunNodePayload) (*appsruntime.AppRuntime, error) {
+func (a *AppsRunTimeService) RunApp(ctx context.Context, payload *appsruntime.RunAppPayload) (*appsruntime.AppRuntime, error) {
 
 	log := a.log.With(slog.String("op", op), slog.String("command:", payload.Command))
 

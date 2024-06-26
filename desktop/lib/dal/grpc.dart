@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:desktop/pb/nodes.pbgrpc.dart';
+import 'package:desktop/pb/api.pbgrpc.dart';
 import 'package:grpc/grpc.dart';
 
 const host = 'localhost';
@@ -9,7 +9,7 @@ const port = 44044;
 class GrpcClient {
   late ClientChannel _channel;
   EnvironmentClient? envClient;
-  NodesClient? nodeClient;
+  AppsClient? appsClient;
   late Stream<ConnectionState> stream;
 
   connectgRpc() {
@@ -19,7 +19,7 @@ class GrpcClient {
             const ChannelOptions(credentials: ChannelCredentials.insecure()));
 
     envClient = EnvironmentClient(_channel);
-    nodeClient = NodesClient(_channel);
+    appsClient = AppsClient(_channel);
 
     stream = _channel.onConnectionStateChanged;
   }

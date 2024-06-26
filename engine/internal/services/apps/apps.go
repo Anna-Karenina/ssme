@@ -1,4 +1,4 @@
-package nodes
+package apps
 
 import (
 	"context"
@@ -9,13 +9,13 @@ import (
 	"github.com/Anna-Karenina/sme-engine/internal/domain/models"
 )
 
-const op = "nodes.service"
+const op = "apps.service"
 
-type Node struct {
-	log         *slog.Logger
-	nodeCRUD    NodeCRUD
-	nodeActions NodeActions
-	envService  EnvService
+type Apps struct {
+	log        *slog.Logger
+	appCRUD    AppCRUD
+	appActions AppActions
+	envService EnvService
 }
 
 type EnvService interface {
@@ -25,35 +25,34 @@ type EnvService interface {
 	CheckAppPathIsExist(ctx context.Context, appPath string) (bool, error)
 }
 
-type NodeActions interface {
-	RunNode(ctx context.Context, payload *appsruntime.RunNodePayload) (*appsruntime.AppRuntime, error)
-	StopNode(ctx context.Context, id int) (*appsruntime.AppRuntime, error)
+type AppActions interface {
+	RunApp(ctx context.Context, payload *appsruntime.RunAppPayload) (*appsruntime.AppRuntime, error)
+	StopApp(ctx context.Context, id int) (*appsruntime.AppRuntime, error)
 }
 
-type NodeCRUD interface {
+type AppCRUD interface {
 	Create(ctx context.Context, path string, name string) (*models.Node, error)
 	Read(ctx context.Context, id int) (*models.Node, error)
 	Update(ctx context.Context, in *models.Node) (*models.Node, error)
-	GetAllNodes(ctx context.Context) ([]*models.Node, error)
+	GetAllApps(ctx context.Context) ([]*models.Node, error)
 	InternalGetNodeById(cxt context.Context, id int) (*models.Node, error)
 }
 
-func New(log *slog.Logger, crudNode NodeCRUD, nodeActions NodeActions, envService EnvService) *Node {
-	return &Node{
-		log:         log,
-		nodeCRUD:    crudNode,
-		nodeActions: nodeActions,
-		envService:  envService,
+func New(log *slog.Logger, appCRUD AppCRUD, appActions AppActions, envService EnvService) *Apps {
+	return &Apps{
+		log:        log,
+		appCRUD:    appCRUD,
+		appActions: appActions,
+		envService: envService,
 	}
 }
 
-func (n *Node) CreateNode(ctx context.Context, path string, name string) (*models.Node, error) {
+func (n *Apps) CreateApp(ctx context.Context, path string, name string) (*models.Node, error) {
 
 	log := n.log.With(slog.String("op", op), slog.String(".path", path), slog.String(".name", name))
-
 	log.Info("creating new node")
 
-	node, err := n.nodeCRUD.Create(ctx, path, name)
+	node, err := n.appCRUD.Create(ctx, path, name)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -78,7 +77,7 @@ func (n *Node) CreateNode(ctx context.Context, path string, name string) (*model
 		node.NodeJsVersion = defaultNodeJsVersion
 		node.Scripts = pkgInfo.Scripts
 
-		node, err = n.nodeCRUD.Update(ctx, node)
+		node, err = n.appCRUD.Update(ctx, node)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", op, err)
 		}
@@ -91,11 +90,11 @@ func (n *Node) CreateNode(ctx context.Context, path string, name string) (*model
 	return node, nil
 }
 
-func (n *Node) ReadNode(ctx context.Context, id int) (*models.Node, error) {
+func (n *Apps) ReadApp(ctx context.Context, id int) (*models.Node, error) {
 	log := n.log.With(slog.String("op", op), slog.Int(".id", id))
 	log.Info("try read node data")
 
-	node, err := n.nodeCRUD.Read(ctx, id)
+	node, err := n.appCRUD.Read(ctx, id)
 
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
@@ -111,22 +110,22 @@ func (n *Node) ReadNode(ctx context.Context, id int) (*models.Node, error) {
 	return node, nil
 }
 
-func (n *Node) ReadAllNodes(ctx context.Context) ([]*models.Node, error) {
+func (n *Apps) ReadAllApps(ctx context.Context) ([]*models.Node, error) {
 	log := n.log.With(slog.String("op", op))
 	log.Info("getting all nodes")
 
-	nodes, err := n.nodeCRUD.GetAllNodes(ctx)
+	nodes, err := n.appCRUD.GetAllApps(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	return nodes, nil
 }
 
-func (n *Node) RunNode(ctx context.Context, payload *appsruntime.RunNodePayload) (*appsruntime.AppRuntime, error) {
+func (n *Apps) RunApp(ctx context.Context, payload *appsruntime.RunAppPayload) (*appsruntime.AppRuntime, error) {
 	log := n.log.With(slog.String("op", op))
 	log.Info("try start node")
 
-	node, err := n.nodeActions.RunNode(ctx, payload)
+	node, err := n.appActions.RunApp(ctx, payload)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -134,12 +133,12 @@ func (n *Node) RunNode(ctx context.Context, payload *appsruntime.RunNodePayload)
 	return node, nil
 }
 
-func (n *Node) StopNode(ctx context.Context, id int) (*appsruntime.AppRuntime, error) {
-	const op = "NODE.StopNode"
+func (n *Apps) StopApp(ctx context.Context, id int) (*appsruntime.AppRuntime, error) {
+	const op = "App.StopApp"
 	log := n.log.With(slog.String("op", op))
 	log.Info("try stop node")
 
-	node, err := n.nodeActions.StopNode(ctx, id)
+	node, err := n.appActions.StopApp(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -147,11 +146,11 @@ func (n *Node) StopNode(ctx context.Context, id int) (*appsruntime.AppRuntime, e
 	return node, nil
 }
 
-func (n *Node) SyncAppScripts(ctx context.Context, id int) (*models.Node, error) {
+func (n *Apps) SyncAppScripts(ctx context.Context, id int) (*models.Node, error) {
 	log := n.log.With(slog.String("op", op))
 	log.Info("sync node scripts")
 
-	node, err := n.nodeCRUD.Read(ctx, id)
+	node, err := n.appCRUD.Read(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -162,22 +161,22 @@ func (n *Node) SyncAppScripts(ctx context.Context, id int) (*models.Node, error)
 	}
 
 	node.Scripts = scripts.Scripts
-	node, err = n.nodeCRUD.Update(ctx, node)
+	node, err = n.appCRUD.Update(ctx, node)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	return node, nil
 }
 
-func (n *Node) UpdateAppDefaultNodeJsVerion(ctx context.Context, id int, version string, updateNvmrc bool) (string, error) {
+func (n *Apps) UpdateAppDefaultNodeJsVerion(ctx context.Context, id int, version string, updateNvmrc bool) (string, error) {
 
-	node, err := n.nodeCRUD.InternalGetNodeById(ctx, id)
+	node, err := n.appCRUD.InternalGetNodeById(ctx, id)
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
 	node.NodeJsVersion = version
-	node, err = n.nodeCRUD.Update(ctx, node)
+	node, err = n.appCRUD.Update(ctx, node)
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
@@ -192,18 +191,22 @@ func (n *Node) UpdateAppDefaultNodeJsVerion(ctx context.Context, id int, version
 	return "ok", nil
 }
 
-func (n *Node) UpdateDefaultRunScript(ctx context.Context, id int, script string) (node *models.Node, err error) {
+func (n *Apps) UpdateDefaultRunScript(ctx context.Context, id int, script string) (*models.Node, error) {
 	const op = "NODE.UpdateDefaultRunScript"
-	log := n.log.With(slog.String("op", op), slog.Int("Id", id))
-	log.Info("try start node")
+	log := n.log.With(
+		slog.String("op", op),
+		slog.Int("Id", id),
+		slog.String(".Script", script))
 
-	node, err = n.nodeCRUD.InternalGetNodeById(ctx, id)
+	log.Info("trying update default run script")
+
+	node, err := n.appCRUD.InternalGetNodeById(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
 	node.DefaultScript = script
-	node, err = n.nodeCRUD.Update(ctx, node)
+	node, err = n.appCRUD.Update(ctx, node)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}

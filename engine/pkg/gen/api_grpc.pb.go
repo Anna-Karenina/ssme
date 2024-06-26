@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v5.27.0
-// source: nodes.proto
+// source: api.proto
 
 package apiv1
 
@@ -18,378 +18,378 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// NodesClient is the client API for Nodes service.
+// AppsClient is the client API for Apps service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type NodesClient interface {
-	CreateNode(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*Node, error)
-	ReadNode(ctx context.Context, in *ReadRequest, opts ...grpc.CallOption) (*Node, error)
-	UpdateNode(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*Node, error)
-	RemoveNode(ctx context.Context, in *ReadRequest, opts ...grpc.CallOption) (*ReadRequest, error)
-	ReadAllNodes(ctx context.Context, in *EmptyParams, opts ...grpc.CallOption) (*NodeList, error)
-	RunNode(ctx context.Context, in *RunNodeRequest, opts ...grpc.CallOption) (*NodeRunTime, error)
-	StopNode(ctx context.Context, in *StopNodeRequest, opts ...grpc.CallOption) (*NodeRunTime, error)
-	SyncAppScripts(ctx context.Context, in *ReadRequest, opts ...grpc.CallOption) (*Node, error)
-	UpdateDefaultRunScript(ctx context.Context, in *UpdateDefaultRunScriptParams, opts ...grpc.CallOption) (*Node, error)
+type AppsClient interface {
+	CreateApp(ctx context.Context, in *CreateAppPayload, opts ...grpc.CallOption) (*App, error)
+	ReadApp(ctx context.Context, in *AppIdPayload, opts ...grpc.CallOption) (*App, error)
+	UpdateApp(ctx context.Context, in *CreateAppPayload, opts ...grpc.CallOption) (*App, error)
+	RemoveApp(ctx context.Context, in *AppIdPayload, opts ...grpc.CallOption) (*AppIdPayload, error)
+	ReadAllApps(ctx context.Context, in *EmptyParams, opts ...grpc.CallOption) (*AppList, error)
+	RunApp(ctx context.Context, in *RunAppRequest, opts ...grpc.CallOption) (*AppRunTime, error)
+	StopApp(ctx context.Context, in *StopAppRequest, opts ...grpc.CallOption) (*AppRunTime, error)
+	SyncAppScripts(ctx context.Context, in *AppIdPayload, opts ...grpc.CallOption) (*App, error)
+	UpdateDefaultRunScript(ctx context.Context, in *UpdateDefaultRunScriptParams, opts ...grpc.CallOption) (*App, error)
 }
 
-type nodesClient struct {
+type appsClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewNodesClient(cc grpc.ClientConnInterface) NodesClient {
-	return &nodesClient{cc}
+func NewAppsClient(cc grpc.ClientConnInterface) AppsClient {
+	return &appsClient{cc}
 }
 
-func (c *nodesClient) CreateNode(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*Node, error) {
-	out := new(Node)
-	err := c.cc.Invoke(ctx, "/api.Nodes/CreateNode", in, out, opts...)
+func (c *appsClient) CreateApp(ctx context.Context, in *CreateAppPayload, opts ...grpc.CallOption) (*App, error) {
+	out := new(App)
+	err := c.cc.Invoke(ctx, "/api.Apps/CreateApp", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *nodesClient) ReadNode(ctx context.Context, in *ReadRequest, opts ...grpc.CallOption) (*Node, error) {
-	out := new(Node)
-	err := c.cc.Invoke(ctx, "/api.Nodes/ReadNode", in, out, opts...)
+func (c *appsClient) ReadApp(ctx context.Context, in *AppIdPayload, opts ...grpc.CallOption) (*App, error) {
+	out := new(App)
+	err := c.cc.Invoke(ctx, "/api.Apps/ReadApp", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *nodesClient) UpdateNode(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*Node, error) {
-	out := new(Node)
-	err := c.cc.Invoke(ctx, "/api.Nodes/UpdateNode", in, out, opts...)
+func (c *appsClient) UpdateApp(ctx context.Context, in *CreateAppPayload, opts ...grpc.CallOption) (*App, error) {
+	out := new(App)
+	err := c.cc.Invoke(ctx, "/api.Apps/UpdateApp", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *nodesClient) RemoveNode(ctx context.Context, in *ReadRequest, opts ...grpc.CallOption) (*ReadRequest, error) {
-	out := new(ReadRequest)
-	err := c.cc.Invoke(ctx, "/api.Nodes/RemoveNode", in, out, opts...)
+func (c *appsClient) RemoveApp(ctx context.Context, in *AppIdPayload, opts ...grpc.CallOption) (*AppIdPayload, error) {
+	out := new(AppIdPayload)
+	err := c.cc.Invoke(ctx, "/api.Apps/RemoveApp", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *nodesClient) ReadAllNodes(ctx context.Context, in *EmptyParams, opts ...grpc.CallOption) (*NodeList, error) {
-	out := new(NodeList)
-	err := c.cc.Invoke(ctx, "/api.Nodes/ReadAllNodes", in, out, opts...)
+func (c *appsClient) ReadAllApps(ctx context.Context, in *EmptyParams, opts ...grpc.CallOption) (*AppList, error) {
+	out := new(AppList)
+	err := c.cc.Invoke(ctx, "/api.Apps/ReadAllApps", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *nodesClient) RunNode(ctx context.Context, in *RunNodeRequest, opts ...grpc.CallOption) (*NodeRunTime, error) {
-	out := new(NodeRunTime)
-	err := c.cc.Invoke(ctx, "/api.Nodes/RunNode", in, out, opts...)
+func (c *appsClient) RunApp(ctx context.Context, in *RunAppRequest, opts ...grpc.CallOption) (*AppRunTime, error) {
+	out := new(AppRunTime)
+	err := c.cc.Invoke(ctx, "/api.Apps/RunApp", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *nodesClient) StopNode(ctx context.Context, in *StopNodeRequest, opts ...grpc.CallOption) (*NodeRunTime, error) {
-	out := new(NodeRunTime)
-	err := c.cc.Invoke(ctx, "/api.Nodes/StopNode", in, out, opts...)
+func (c *appsClient) StopApp(ctx context.Context, in *StopAppRequest, opts ...grpc.CallOption) (*AppRunTime, error) {
+	out := new(AppRunTime)
+	err := c.cc.Invoke(ctx, "/api.Apps/StopApp", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *nodesClient) SyncAppScripts(ctx context.Context, in *ReadRequest, opts ...grpc.CallOption) (*Node, error) {
-	out := new(Node)
-	err := c.cc.Invoke(ctx, "/api.Nodes/SyncAppScripts", in, out, opts...)
+func (c *appsClient) SyncAppScripts(ctx context.Context, in *AppIdPayload, opts ...grpc.CallOption) (*App, error) {
+	out := new(App)
+	err := c.cc.Invoke(ctx, "/api.Apps/SyncAppScripts", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *nodesClient) UpdateDefaultRunScript(ctx context.Context, in *UpdateDefaultRunScriptParams, opts ...grpc.CallOption) (*Node, error) {
-	out := new(Node)
-	err := c.cc.Invoke(ctx, "/api.Nodes/UpdateDefaultRunScript", in, out, opts...)
+func (c *appsClient) UpdateDefaultRunScript(ctx context.Context, in *UpdateDefaultRunScriptParams, opts ...grpc.CallOption) (*App, error) {
+	out := new(App)
+	err := c.cc.Invoke(ctx, "/api.Apps/UpdateDefaultRunScript", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// NodesServer is the server API for Nodes service.
-// All implementations must embed UnimplementedNodesServer
+// AppsServer is the server API for Apps service.
+// All implementations must embed UnimplementedAppsServer
 // for forward compatibility
-type NodesServer interface {
-	CreateNode(context.Context, *CreateRequest) (*Node, error)
-	ReadNode(context.Context, *ReadRequest) (*Node, error)
-	UpdateNode(context.Context, *CreateRequest) (*Node, error)
-	RemoveNode(context.Context, *ReadRequest) (*ReadRequest, error)
-	ReadAllNodes(context.Context, *EmptyParams) (*NodeList, error)
-	RunNode(context.Context, *RunNodeRequest) (*NodeRunTime, error)
-	StopNode(context.Context, *StopNodeRequest) (*NodeRunTime, error)
-	SyncAppScripts(context.Context, *ReadRequest) (*Node, error)
-	UpdateDefaultRunScript(context.Context, *UpdateDefaultRunScriptParams) (*Node, error)
-	mustEmbedUnimplementedNodesServer()
+type AppsServer interface {
+	CreateApp(context.Context, *CreateAppPayload) (*App, error)
+	ReadApp(context.Context, *AppIdPayload) (*App, error)
+	UpdateApp(context.Context, *CreateAppPayload) (*App, error)
+	RemoveApp(context.Context, *AppIdPayload) (*AppIdPayload, error)
+	ReadAllApps(context.Context, *EmptyParams) (*AppList, error)
+	RunApp(context.Context, *RunAppRequest) (*AppRunTime, error)
+	StopApp(context.Context, *StopAppRequest) (*AppRunTime, error)
+	SyncAppScripts(context.Context, *AppIdPayload) (*App, error)
+	UpdateDefaultRunScript(context.Context, *UpdateDefaultRunScriptParams) (*App, error)
+	mustEmbedUnimplementedAppsServer()
 }
 
-// UnimplementedNodesServer must be embedded to have forward compatible implementations.
-type UnimplementedNodesServer struct {
+// UnimplementedAppsServer must be embedded to have forward compatible implementations.
+type UnimplementedAppsServer struct {
 }
 
-func (UnimplementedNodesServer) CreateNode(context.Context, *CreateRequest) (*Node, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateNode not implemented")
+func (UnimplementedAppsServer) CreateApp(context.Context, *CreateAppPayload) (*App, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateApp not implemented")
 }
-func (UnimplementedNodesServer) ReadNode(context.Context, *ReadRequest) (*Node, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ReadNode not implemented")
+func (UnimplementedAppsServer) ReadApp(context.Context, *AppIdPayload) (*App, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReadApp not implemented")
 }
-func (UnimplementedNodesServer) UpdateNode(context.Context, *CreateRequest) (*Node, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateNode not implemented")
+func (UnimplementedAppsServer) UpdateApp(context.Context, *CreateAppPayload) (*App, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateApp not implemented")
 }
-func (UnimplementedNodesServer) RemoveNode(context.Context, *ReadRequest) (*ReadRequest, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RemoveNode not implemented")
+func (UnimplementedAppsServer) RemoveApp(context.Context, *AppIdPayload) (*AppIdPayload, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveApp not implemented")
 }
-func (UnimplementedNodesServer) ReadAllNodes(context.Context, *EmptyParams) (*NodeList, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ReadAllNodes not implemented")
+func (UnimplementedAppsServer) ReadAllApps(context.Context, *EmptyParams) (*AppList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReadAllApps not implemented")
 }
-func (UnimplementedNodesServer) RunNode(context.Context, *RunNodeRequest) (*NodeRunTime, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RunNode not implemented")
+func (UnimplementedAppsServer) RunApp(context.Context, *RunAppRequest) (*AppRunTime, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RunApp not implemented")
 }
-func (UnimplementedNodesServer) StopNode(context.Context, *StopNodeRequest) (*NodeRunTime, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StopNode not implemented")
+func (UnimplementedAppsServer) StopApp(context.Context, *StopAppRequest) (*AppRunTime, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StopApp not implemented")
 }
-func (UnimplementedNodesServer) SyncAppScripts(context.Context, *ReadRequest) (*Node, error) {
+func (UnimplementedAppsServer) SyncAppScripts(context.Context, *AppIdPayload) (*App, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SyncAppScripts not implemented")
 }
-func (UnimplementedNodesServer) UpdateDefaultRunScript(context.Context, *UpdateDefaultRunScriptParams) (*Node, error) {
+func (UnimplementedAppsServer) UpdateDefaultRunScript(context.Context, *UpdateDefaultRunScriptParams) (*App, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDefaultRunScript not implemented")
 }
-func (UnimplementedNodesServer) mustEmbedUnimplementedNodesServer() {}
+func (UnimplementedAppsServer) mustEmbedUnimplementedAppsServer() {}
 
-// UnsafeNodesServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to NodesServer will
+// UnsafeAppsServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to AppsServer will
 // result in compilation errors.
-type UnsafeNodesServer interface {
-	mustEmbedUnimplementedNodesServer()
+type UnsafeAppsServer interface {
+	mustEmbedUnimplementedAppsServer()
 }
 
-func RegisterNodesServer(s grpc.ServiceRegistrar, srv NodesServer) {
-	s.RegisterService(&Nodes_ServiceDesc, srv)
+func RegisterAppsServer(s grpc.ServiceRegistrar, srv AppsServer) {
+	s.RegisterService(&Apps_ServiceDesc, srv)
 }
 
-func _Nodes_CreateNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateRequest)
+func _Apps_CreateApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAppPayload)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NodesServer).CreateNode(ctx, in)
+		return srv.(AppsServer).CreateApp(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Nodes/CreateNode",
+		FullMethod: "/api.Apps/CreateApp",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodesServer).CreateNode(ctx, req.(*CreateRequest))
+		return srv.(AppsServer).CreateApp(ctx, req.(*CreateAppPayload))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Nodes_ReadNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReadRequest)
+func _Apps_ReadApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AppIdPayload)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NodesServer).ReadNode(ctx, in)
+		return srv.(AppsServer).ReadApp(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Nodes/ReadNode",
+		FullMethod: "/api.Apps/ReadApp",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodesServer).ReadNode(ctx, req.(*ReadRequest))
+		return srv.(AppsServer).ReadApp(ctx, req.(*AppIdPayload))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Nodes_UpdateNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateRequest)
+func _Apps_UpdateApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAppPayload)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NodesServer).UpdateNode(ctx, in)
+		return srv.(AppsServer).UpdateApp(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Nodes/UpdateNode",
+		FullMethod: "/api.Apps/UpdateApp",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodesServer).UpdateNode(ctx, req.(*CreateRequest))
+		return srv.(AppsServer).UpdateApp(ctx, req.(*CreateAppPayload))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Nodes_RemoveNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReadRequest)
+func _Apps_RemoveApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AppIdPayload)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NodesServer).RemoveNode(ctx, in)
+		return srv.(AppsServer).RemoveApp(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Nodes/RemoveNode",
+		FullMethod: "/api.Apps/RemoveApp",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodesServer).RemoveNode(ctx, req.(*ReadRequest))
+		return srv.(AppsServer).RemoveApp(ctx, req.(*AppIdPayload))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Nodes_ReadAllNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Apps_ReadAllApps_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(EmptyParams)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NodesServer).ReadAllNodes(ctx, in)
+		return srv.(AppsServer).ReadAllApps(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Nodes/ReadAllNodes",
+		FullMethod: "/api.Apps/ReadAllApps",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodesServer).ReadAllNodes(ctx, req.(*EmptyParams))
+		return srv.(AppsServer).ReadAllApps(ctx, req.(*EmptyParams))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Nodes_RunNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RunNodeRequest)
+func _Apps_RunApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RunAppRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NodesServer).RunNode(ctx, in)
+		return srv.(AppsServer).RunApp(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Nodes/RunNode",
+		FullMethod: "/api.Apps/RunApp",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodesServer).RunNode(ctx, req.(*RunNodeRequest))
+		return srv.(AppsServer).RunApp(ctx, req.(*RunAppRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Nodes_StopNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StopNodeRequest)
+func _Apps_StopApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StopAppRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NodesServer).StopNode(ctx, in)
+		return srv.(AppsServer).StopApp(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Nodes/StopNode",
+		FullMethod: "/api.Apps/StopApp",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodesServer).StopNode(ctx, req.(*StopNodeRequest))
+		return srv.(AppsServer).StopApp(ctx, req.(*StopAppRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Nodes_SyncAppScripts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReadRequest)
+func _Apps_SyncAppScripts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AppIdPayload)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NodesServer).SyncAppScripts(ctx, in)
+		return srv.(AppsServer).SyncAppScripts(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Nodes/SyncAppScripts",
+		FullMethod: "/api.Apps/SyncAppScripts",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodesServer).SyncAppScripts(ctx, req.(*ReadRequest))
+		return srv.(AppsServer).SyncAppScripts(ctx, req.(*AppIdPayload))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Nodes_UpdateDefaultRunScript_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Apps_UpdateDefaultRunScript_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateDefaultRunScriptParams)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(NodesServer).UpdateDefaultRunScript(ctx, in)
+		return srv.(AppsServer).UpdateDefaultRunScript(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.Nodes/UpdateDefaultRunScript",
+		FullMethod: "/api.Apps/UpdateDefaultRunScript",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NodesServer).UpdateDefaultRunScript(ctx, req.(*UpdateDefaultRunScriptParams))
+		return srv.(AppsServer).UpdateDefaultRunScript(ctx, req.(*UpdateDefaultRunScriptParams))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// Nodes_ServiceDesc is the grpc.ServiceDesc for Nodes service.
+// Apps_ServiceDesc is the grpc.ServiceDesc for Apps service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Nodes_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "api.Nodes",
-	HandlerType: (*NodesServer)(nil),
+var Apps_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "api.Apps",
+	HandlerType: (*AppsServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateNode",
-			Handler:    _Nodes_CreateNode_Handler,
+			MethodName: "CreateApp",
+			Handler:    _Apps_CreateApp_Handler,
 		},
 		{
-			MethodName: "ReadNode",
-			Handler:    _Nodes_ReadNode_Handler,
+			MethodName: "ReadApp",
+			Handler:    _Apps_ReadApp_Handler,
 		},
 		{
-			MethodName: "UpdateNode",
-			Handler:    _Nodes_UpdateNode_Handler,
+			MethodName: "UpdateApp",
+			Handler:    _Apps_UpdateApp_Handler,
 		},
 		{
-			MethodName: "RemoveNode",
-			Handler:    _Nodes_RemoveNode_Handler,
+			MethodName: "RemoveApp",
+			Handler:    _Apps_RemoveApp_Handler,
 		},
 		{
-			MethodName: "ReadAllNodes",
-			Handler:    _Nodes_ReadAllNodes_Handler,
+			MethodName: "ReadAllApps",
+			Handler:    _Apps_ReadAllApps_Handler,
 		},
 		{
-			MethodName: "RunNode",
-			Handler:    _Nodes_RunNode_Handler,
+			MethodName: "RunApp",
+			Handler:    _Apps_RunApp_Handler,
 		},
 		{
-			MethodName: "StopNode",
-			Handler:    _Nodes_StopNode_Handler,
+			MethodName: "StopApp",
+			Handler:    _Apps_StopApp_Handler,
 		},
 		{
 			MethodName: "SyncAppScripts",
-			Handler:    _Nodes_SyncAppScripts_Handler,
+			Handler:    _Apps_SyncAppScripts_Handler,
 		},
 		{
 			MethodName: "UpdateDefaultRunScript",
-			Handler:    _Nodes_UpdateDefaultRunScript_Handler,
+			Handler:    _Apps_UpdateDefaultRunScript_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "nodes.proto",
+	Metadata: "api.proto",
 }
 
 // EnvironmentClient is the client API for Environment service.
@@ -638,5 +638,5 @@ var Environment_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "nodes.proto",
+	Metadata: "api.proto",
 }
