@@ -35,6 +35,7 @@ message Node {
   repeated string scripts = 4;
   string node_version     = 5;
   string default_script   = 6;
+  bool isAppValid         = 7;
 }
 
 

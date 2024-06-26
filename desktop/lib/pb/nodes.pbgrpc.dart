@@ -49,8 +49,8 @@ class NodesClient extends $grpc.Client {
       '/api.Nodes/StopNode',
       ($0.StopNodeRequest value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.NodeRunTime.fromBuffer(value));
-  static final _$updateNodeScripts = $grpc.ClientMethod<$0.ReadRequest, $0.Node>(
-      '/api.Nodes/UpdateNodeScripts',
+  static final _$syncAppScripts = $grpc.ClientMethod<$0.ReadRequest, $0.Node>(
+      '/api.Nodes/SyncAppScripts',
       ($0.ReadRequest value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.Node.fromBuffer(value));
   static final _$updateDefaultRunScript = $grpc.ClientMethod<$0.UpdateDefaultRunScriptParams, $0.Node>(
@@ -92,8 +92,8 @@ class NodesClient extends $grpc.Client {
     return $createUnaryCall(_$stopNode, request, options: options);
   }
 
-  $grpc.ResponseFuture<$0.Node> updateNodeScripts($0.ReadRequest request, {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$updateNodeScripts, request, options: options);
+  $grpc.ResponseFuture<$0.Node> syncAppScripts($0.ReadRequest request, {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$syncAppScripts, request, options: options);
   }
 
   $grpc.ResponseFuture<$0.Node> updateDefaultRunScript($0.UpdateDefaultRunScriptParams request, {$grpc.CallOptions? options}) {
@@ -156,8 +156,8 @@ abstract class NodesServiceBase extends $grpc.Service {
         ($core.List<$core.int> value) => $0.StopNodeRequest.fromBuffer(value),
         ($0.NodeRunTime value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.ReadRequest, $0.Node>(
-        'UpdateNodeScripts',
-        updateNodeScripts_Pre,
+        'SyncAppScripts',
+        syncAppScripts_Pre,
         false,
         false,
         ($core.List<$core.int> value) => $0.ReadRequest.fromBuffer(value),
@@ -199,8 +199,8 @@ abstract class NodesServiceBase extends $grpc.Service {
     return stopNode(call, await request);
   }
 
-  $async.Future<$0.Node> updateNodeScripts_Pre($grpc.ServiceCall call, $async.Future<$0.ReadRequest> request) async {
-    return updateNodeScripts(call, await request);
+  $async.Future<$0.Node> syncAppScripts_Pre($grpc.ServiceCall call, $async.Future<$0.ReadRequest> request) async {
+    return syncAppScripts(call, await request);
   }
 
   $async.Future<$0.Node> updateDefaultRunScript_Pre($grpc.ServiceCall call, $async.Future<$0.UpdateDefaultRunScriptParams> request) async {
@@ -214,7 +214,7 @@ abstract class NodesServiceBase extends $grpc.Service {
   $async.Future<$0.NodeList> readAllNodes($grpc.ServiceCall call, $0.EmptyParams request);
   $async.Future<$0.NodeRunTime> runNode($grpc.ServiceCall call, $0.RunNodeRequest request);
   $async.Future<$0.NodeRunTime> stopNode($grpc.ServiceCall call, $0.StopNodeRequest request);
-  $async.Future<$0.Node> updateNodeScripts($grpc.ServiceCall call, $0.ReadRequest request);
+  $async.Future<$0.Node> syncAppScripts($grpc.ServiceCall call, $0.ReadRequest request);
   $async.Future<$0.Node> updateDefaultRunScript($grpc.ServiceCall call, $0.UpdateDefaultRunScriptParams request);
 }
 @$pb.GrpcServiceName('api.Environment')

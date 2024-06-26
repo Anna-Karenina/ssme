@@ -53,6 +53,7 @@ class Node extends $pb.GeneratedMessage {
     $core.Iterable<$core.String>? scripts,
     $core.String? nodeVersion,
     $core.String? defaultScript,
+    $core.bool? isAppValid,
   }) {
     final $result = create();
     if (id != null) {
@@ -73,6 +74,9 @@ class Node extends $pb.GeneratedMessage {
     if (defaultScript != null) {
       $result.defaultScript = defaultScript;
     }
+    if (isAppValid != null) {
+      $result.isAppValid = isAppValid;
+    }
     return $result;
   }
   Node._() : super();
@@ -86,6 +90,7 @@ class Node extends $pb.GeneratedMessage {
     ..pPS(4, _omitFieldNames ? '' : 'scripts')
     ..aOS(5, _omitFieldNames ? '' : 'nodeVersion')
     ..aOS(6, _omitFieldNames ? '' : 'defaultScript')
+    ..aOB(7, _omitFieldNames ? '' : 'isAppValid', protoName: 'isAppValid')
     ..hasRequiredFields = false
   ;
 
@@ -157,6 +162,15 @@ class Node extends $pb.GeneratedMessage {
   $core.bool hasDefaultScript() => $_has(5);
   @$pb.TagNumber(6)
   void clearDefaultScript() => clearField(6);
+
+  @$pb.TagNumber(7)
+  $core.bool get isAppValid => $_getBF(6);
+  @$pb.TagNumber(7)
+  set isAppValid($core.bool v) { $_setBool(6, v); }
+  @$pb.TagNumber(7)
+  $core.bool hasIsAppValid() => $_has(6);
+  @$pb.TagNumber(7)
+  void clearIsAppValid() => clearField(7);
 }
 
 class RequestVersion extends $pb.GeneratedMessage {
@@ -599,6 +613,7 @@ class RunNodeRequest extends $pb.GeneratedMessage {
   factory RunNodeRequest({
     $core.int? id,
     $core.String? command,
+    $core.String? nodeVersion,
   }) {
     final $result = create();
     if (id != null) {
@@ -606,6 +621,9 @@ class RunNodeRequest extends $pb.GeneratedMessage {
     }
     if (command != null) {
       $result.command = command;
+    }
+    if (nodeVersion != null) {
+      $result.nodeVersion = nodeVersion;
     }
     return $result;
   }
@@ -616,6 +634,7 @@ class RunNodeRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'RunNodeRequest', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
     ..a<$core.int>(1, _omitFieldNames ? '' : 'id', $pb.PbFieldType.O3)
     ..aOS(2, _omitFieldNames ? '' : 'command')
+    ..aOS(3, _omitFieldNames ? '' : 'nodeVersion', protoName: 'nodeVersion')
     ..hasRequiredFields = false
   ;
 
@@ -657,6 +676,15 @@ class RunNodeRequest extends $pb.GeneratedMessage {
   $core.bool hasCommand() => $_has(1);
   @$pb.TagNumber(2)
   void clearCommand() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get nodeVersion => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set nodeVersion($core.String v) { $_setString(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasNodeVersion() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearNodeVersion() => clearField(3);
 }
 
 class NodeRunTime extends $pb.GeneratedMessage {

@@ -32,6 +32,7 @@ const Node$json = {
     {'1': 'scripts', '3': 4, '4': 3, '5': 9, '10': 'scripts'},
     {'1': 'node_version', '3': 5, '4': 1, '5': 9, '10': 'nodeVersion'},
     {'1': 'default_script', '3': 6, '4': 1, '5': 9, '10': 'defaultScript'},
+    {'1': 'isAppValid', '3': 7, '4': 1, '5': 8, '10': 'isAppValid'},
   ],
 };
 
@@ -39,7 +40,8 @@ const Node$json = {
 final $typed_data.Uint8List nodeDescriptor = $convert.base64Decode(
     'CgROb2RlEg4KAmlkGAEgASgFUgJpZBISCgRwYXRoGAIgASgJUgRwYXRoEhIKBG5hbWUYAyABKA'
     'lSBG5hbWUSGAoHc2NyaXB0cxgEIAMoCVIHc2NyaXB0cxIhCgxub2RlX3ZlcnNpb24YBSABKAlS'
-    'C25vZGVWZXJzaW9uEiUKDmRlZmF1bHRfc2NyaXB0GAYgASgJUg1kZWZhdWx0U2NyaXB0');
+    'C25vZGVWZXJzaW9uEiUKDmRlZmF1bHRfc2NyaXB0GAYgASgJUg1kZWZhdWx0U2NyaXB0Eh4KCm'
+    'lzQXBwVmFsaWQYByABKAhSCmlzQXBwVmFsaWQ=');
 
 @$core.Deprecated('Use requestVersionDescriptor instead')
 const RequestVersion$json = {
@@ -148,13 +150,14 @@ const RunNodeRequest$json = {
   '2': [
     {'1': 'id', '3': 1, '4': 1, '5': 5, '10': 'id'},
     {'1': 'command', '3': 2, '4': 1, '5': 9, '10': 'command'},
+    {'1': 'nodeVersion', '3': 3, '4': 1, '5': 9, '10': 'nodeVersion'},
   ],
 };
 
 /// Descriptor for `RunNodeRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List runNodeRequestDescriptor = $convert.base64Decode(
     'Cg5SdW5Ob2RlUmVxdWVzdBIOCgJpZBgBIAEoBVICaWQSGAoHY29tbWFuZBgCIAEoCVIHY29tbW'
-    'FuZA==');
+    'FuZBIgCgtub2RlVmVyc2lvbhgDIAEoCVILbm9kZVZlcnNpb24=');
 
 @$core.Deprecated('Use nodeRunTimeDescriptor instead')
 const NodeRunTime$json = {

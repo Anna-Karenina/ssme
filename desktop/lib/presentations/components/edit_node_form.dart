@@ -3,6 +3,33 @@ import 'package:desktop/utils/colors.dart';
 import 'package:flutter/material.dart' hide ProgressIndicator;
 import 'package:reactive_forms/reactive_forms.dart';
 
+// class UniqueEmailAsyncValidator extends AsyncValidator<dynamic> {
+//   @override
+//   Future<Map<String, dynamic>?> validate(
+//       AbstractControl<dynamic> control) async {
+//     final error = {'unique': false};
+
+//     final isUniqueEmail = await _getIsUniqueEmail(control.value.toString());
+//     if (!isUniqueEmail) {
+//       control.markAsTouched();
+//       return error;
+//     }
+
+//     return null;
+//   }
+
+//   /// Simulates a time consuming operation (i.e. a Server request)
+//   Future<bool> _getIsUniqueEmail(String email) {
+//     // simple array that simulates emails stored in the Server DB.
+//     final storedEmails = ['johndoe@email.com', 'john@email.com'];
+
+//     return Future.delayed(
+//       const Duration(seconds: 5),
+//       () => !storedEmails.contains(email),
+//     );
+//   }
+// }
+
 // ignore: must_be_immutable
 class EditNodeForm extends StatefulWidget {
   Function onSubmit;
@@ -18,9 +45,11 @@ class _EditNodeFormState extends State<EditNodeForm> {
   FormGroup buildForm(NodeUi? selectedNode) => fb.group(<String, Object>{
         'name': FormControl<String>(
             value: selectedNode?.name ?? "", validators: [Validators.required]),
-        'path': FormControl<String>(
-            value: selectedNode?.path ?? "",
-            validators: [Validators.required, Validators.minLength(8)]),
+        'path':
+            FormControl<String>(value: selectedNode?.path ?? "", validators: [
+          Validators.required,
+          Validators.minLength(8),
+        ]),
       });
 
   bool _loading = false;

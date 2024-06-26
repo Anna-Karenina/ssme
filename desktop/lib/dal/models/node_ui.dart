@@ -13,6 +13,7 @@ class NodeUi {
   final String branch;
   final String nodeVersion;
   final String defaultScript;
+  final bool isAppValid;
   final List<String> scripts;
 
   NodeUi(
@@ -28,7 +29,8 @@ class NodeUi {
       required this.branch,
       required this.scripts,
       required this.defaultScript,
-      required this.nodeVersion});
+      required this.nodeVersion,
+      required this.isAppValid});
 }
 
 List<NodeUi> nodesUifromRequest(NodeList list) {
@@ -41,6 +43,7 @@ List<NodeUi> nodesUifromRequest(NodeList list) {
       nodeVersion: e.nodeVersion.trim(),
       scripts: e.scripts,
       defaultScript: e.defaultScript,
+      isAppValid: e.isAppValid,
       //runtime
       status: "",
       pid: "",
@@ -64,6 +67,7 @@ NodeUi nodeUiFromRequest(NodeRunTime nodeRt, NodeUi currentNode) => NodeUi(
     ports: nodeRt.ports.join(","),
     branch: nodeRt.branch,
     name: currentNode.name,
+    isAppValid: currentNode.isAppValid,
     path: currentNode.path,
     scripts: currentNode.scripts,
     nodeVersion: currentNode.nodeVersion,

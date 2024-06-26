@@ -198,7 +198,7 @@ class _NodeTableState extends State<NodeTable> {
             message:
                 "required node  ${node.nodeVersion == '' ? 'unknown version' : node.nodeVersion}, but it's not installed",
             child: IconButton(
-                onPressed: () => widget.runApp(node),
+                onPressed: () {},
                 icon: const Icon(
                   Icons.sync_problem,
                   color: CustomColors.accentColor,

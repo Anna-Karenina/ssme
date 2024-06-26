@@ -137,9 +137,9 @@ func (n *Node) RunNode(ctx context.Context, payload *appsruntime.RunNodePayload)
 func (n *Node) StopNode(ctx context.Context, id int) (*appsruntime.AppRuntime, error) {
 	const op = "NODE.StopNode"
 	log := n.log.With(slog.String("op", op))
-	log.Info("try start node")
+	log.Info("try stop node")
 
-	node, err := n.nodeActions.StopNode(ctx, 1)
+	node, err := n.nodeActions.StopNode(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}

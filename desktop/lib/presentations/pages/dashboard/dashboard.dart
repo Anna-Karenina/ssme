@@ -384,7 +384,7 @@ class _DashboardState extends State<Dashboard> {
   Future<NodeUi?> _syncAppData(int id) async {
     try {
       await _getNodeJsInfo();
-      await grpc.nodeClient!.updateNodeScripts(ReadRequest(id: id));
+      await grpc.nodeClient!.syncAppScripts(ReadRequest(id: id));
       final apiNode = await grpc.nodeClient!.readNode(ReadRequest(id: id));
       var updatedNode = null;
 
@@ -393,6 +393,7 @@ class _DashboardState extends State<Dashboard> {
           updatedNode = NodeUi(
             id: id,
             name: apiNode.name,
+            isAppValid: apiNode.isAppValid,
             path: apiNode.path,
             scripts: apiNode.scripts,
             nodeVersion: apiNode.nodeVersion,
@@ -460,6 +461,7 @@ class _DashboardState extends State<Dashboard> {
                 name: n.name,
                 path: n.path,
                 status: n.status,
+                isAppValid: n.isAppValid,
                 pid: n.pid,
                 cpu: n.cpu,
                 mem: n.mem,

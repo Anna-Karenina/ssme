@@ -113,7 +113,7 @@ class _Rs25AppState extends State<Rs25App> {
           GRPCLIB.ConnectionState.idle,
           GRPCLIB.ConnectionState.shutdown
         ].contains(event)) {
-          setState(() => _engineIsRunning = false);
+          // setState(() => _engineIsRunning = false);
         }
       });
       setState(() => _engineIsRunning = true);

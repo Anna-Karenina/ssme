@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"log"
 	"log/slog"
 	"math/rand/v2"
 	"os"
@@ -38,17 +37,18 @@ func NewAppsRunTimeService(
 }
 
 func (a *AppsRunTimeService) StopNode(ctx context.Context, id int) (*appsruntime.AppRuntime, error) {
-	log.Printf("node: %v", a.runTimeStorage.Apps)
+	log := a.log.With(slog.String("op", op), slog.Int(".id", id))
 
 	node, err := a.repository.InternalGetNodeById(ctx, id)
 	if err != nil {
-		log.Printf("some err here1: %v", err)
+		log.Info("some err here1: %v", err)
 	}
 
 	pid := a.runTimeStorage.Apps[id].Pid
+	log.Info(fmt.Sprint(pid))
 	proc, err := os.FindProcess(pid)
 	if err != nil {
-		log.Fatal("cmd.Process.Stop failed: ", err)
+		log.Info("cmd.Process.Stop failed: ", err)
 	}
 
 	proc.Signal(syscall.SIGTERM)
@@ -79,7 +79,7 @@ func (a *AppsRunTimeService) RunNode(ctx context.Context, payload *appsruntime.R
 		return nil, fmt.Errorf("%s: %w", op, serviceerrors.ErrRuningScriptDidNotExist)
 	}
 
-	command := fmt.Sprintf("fnm exec --using=%s npm  run --prefix %s %s", payload.NodeVersion, node.Path, payload.Command)
+	command := fmt.Sprintf("fnm exec --using=%s npm run --prefix %s %s", payload.NodeVersion, node.Path, payload.Command)
 	parts := strings.Split(command, " ")
 
 	l, err := os.Create(fmt.Sprintf("%s.log", node.Name)) //rewrite
