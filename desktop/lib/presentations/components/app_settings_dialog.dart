@@ -1,17 +1,17 @@
 import 'package:collection/collection.dart';
-import 'package:desktop/dal/models/node_ui.dart';
-import 'package:desktop/pb/nodes.pb.dart';
+import 'package:desktop/dal/models/app_ui.dart';
+import 'package:desktop/pb/api.pb.dart';
 import 'package:desktop/presentations/components/nodejs_download_dialog.dart';
 import 'package:desktop/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class AppSettingsDialog extends StatefulWidget {
-  final NodeUi node;
+  final AppUi node;
   final NodejsVersionsInfo nodejsVersionsInfo;
 
-  final Future<void> Function(String, NodeUi) saveNewNodeJsVersion;
+  final Future<void> Function(String, AppUi) saveNewNodeJsVersion;
   final Future<void> Function(int, String, bool) updateDefaultScript;
-  final Future<NodeUi?> Function(int) syncAppData;
+  final Future<AppUi?> Function(int) syncAppData;
 
   const AppSettingsDialog(
       {super.key,
@@ -31,9 +31,8 @@ class _AppSettingsDialogState extends State<AppSettingsDialog> {
   String _script = "";
   String _version = "";
   bool _loading = true;
-  NodeUi node;
+  AppUi node;
 
-  bool _scriptLoading = false;
   bool _nodeJsDowloading = false;
 
   _AppSettingsDialogState({required this.node});
@@ -127,12 +126,10 @@ class _AppSettingsDialogState extends State<AppSettingsDialog> {
                     style: TextStyle(color: Colors.white70, fontSize: 13),
                   ),
                   initialSelection: _script,
-                  onSelected: _scriptLoading
-                      ? (String? value) async {
-                          setState(() => _script = value!);
-                          await _updateDefaultScript();
-                        }
-                      : null,
+                  onSelected: (String? value) async {
+                    setState(() => _script = value!);
+                    await _updateDefaultScript(value!);
+                  },
                   dropdownMenuEntries: node.scripts
                       .map<DropdownMenuEntry<String>>((String value) {
                     return DropdownMenuEntry<String>(
@@ -152,7 +149,7 @@ class _AppSettingsDialogState extends State<AppSettingsDialog> {
                         value: _saveAsDefault,
                         onChanged: (bool? value) {
                           setState(() => _saveAsDefault = value ?? false);
-                          _updateDefaultScript();
+                          _updateDefaultScript(_script);
                         },
                       ),
                     ],
@@ -166,14 +163,15 @@ class _AppSettingsDialogState extends State<AppSettingsDialog> {
     );
   }
 
-  Future<void> _updateDefaultScript() async {
-    setState(() => _scriptLoading = true);
+  Future<void> _updateDefaultScript(String script) async {
+    setState(() => _nodeJsDowloading = true);
+
     try {
       await widget.updateDefaultScript(widget.node.id, _script, _saveAsDefault);
     } catch (e) {
       print(e);
     } finally {
-      setState(() => _scriptLoading = false);
+      setState(() => _nodeJsDowloading = false);
     }
   }
 

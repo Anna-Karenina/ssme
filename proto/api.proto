@@ -5,17 +5,17 @@ package api;
 option go_package = "github.com/Anna-Karenina/sme-engine;apiv1";
 
 
-service Nodes {
-  rpc CreateNode (CreateRequest) returns (Node);
-  rpc ReadNode (ReadRequest) returns (Node);
-  rpc UpdateNode (CreateRequest) returns (Node);
-  rpc RemoveNode (ReadRequest) returns (ReadRequest);
-  rpc ReadAllNodes (EmptyParams) returns (NodeList);
+service Apps {
+  rpc CreateApp (CreateAppPayload) returns (App);
+  rpc ReadApp (AppIdPayload) returns (App);
+  rpc UpdateApp (CreateAppPayload) returns (App);
+  rpc RemoveApp (AppIdPayload) returns (AppIdPayload);
+  rpc ReadAllApps (EmptyParams) returns (AppList);
 
-  rpc RunNode(RunNodeRequest) returns (NodeRunTime);
-  rpc StopNode(StopNodeRequest) returns (NodeRunTime);
-  rpc SyncAppScripts(ReadRequest) returns(Node);
-  rpc UpdateDefaultRunScript(UpdateDefaultRunScriptParams) returns (Node);
+  rpc RunApp(RunAppRequest) returns (AppRunTime);
+  rpc StopApp(StopAppRequest) returns (AppRunTime);
+  rpc SyncAppScripts(AppIdPayload) returns(App);
+  rpc UpdateDefaultRunScript(UpdateDefaultRunScriptParams) returns (App);
 }
 
 
@@ -28,12 +28,12 @@ service Environment{
 
 message EmptyParams {}
 
-message Node { 
+message App { 
   int32 id                = 1;
   string path             = 2;
   string name             = 3;
   repeated string scripts = 4;
-  string node_version     = 5;
+  string nodeVersion      = 5;
   string default_script   = 6;
   bool isAppValid         = 7;
 }
@@ -49,16 +49,16 @@ message UpdateDefaultNodejsVersionParams {
     bool updateNvmrc = 3;
   }
 
-message NodeList{
-  repeated Node nodes = 1;
+message AppList{
+  repeated App apps = 1;
 }
 
-message CreateRequest { 
+message CreateAppPayload { 
   string path = 1;
   string name = 2;
 }
 
-message ReadRequest { 
+message AppIdPayload { 
   int32 id = 1;
 }
 
@@ -70,17 +70,17 @@ message StatusResponse {
   string status = 1;
 }
 
-message StopNodeRequest  {
+message StopAppRequest  {
   int32 id = 1;
 }
 
-message RunNodeRequest {
+message RunAppRequest {
   int32 id           = 1;
   string command     = 2;
   string nodeVersion = 3;
 }
 
-message NodeRunTime {
+message AppRunTime {
   int32 id                = 1;
 	string status           = 2;
 	int32 pid               = 3;
@@ -89,7 +89,6 @@ message NodeRunTime {
 	int32 sid               = 6;
 	repeated int32 ports    = 7;
 	string branch           = 8;
-
 }
 
 
@@ -105,7 +104,7 @@ message TotalEnviromentUsage {
 
 message ProcessInfo {
   TotalEnviromentUsage environment = 1;
-  repeated NodeRunTime nodes       = 2;
+  repeated AppRunTime apps         = 2;
 }
 
 message NodejsVersionsInfo { 

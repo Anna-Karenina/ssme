@@ -1,6 +1,6 @@
 //
 //  Generated code. Do not modify.
-//  source: nodes.proto
+//  source: api.proto
 //
 // @dart = 2.12
 
@@ -45,8 +45,8 @@ class EmptyParams extends $pb.GeneratedMessage {
   static EmptyParams? _defaultInstance;
 }
 
-class Node extends $pb.GeneratedMessage {
-  factory Node({
+class App extends $pb.GeneratedMessage {
+  factory App({
     $core.int? id,
     $core.String? path,
     $core.String? name,
@@ -79,16 +79,16 @@ class Node extends $pb.GeneratedMessage {
     }
     return $result;
   }
-  Node._() : super();
-  factory Node.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory Node.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  App._() : super();
+  factory App.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory App.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Node', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'App', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
     ..a<$core.int>(1, _omitFieldNames ? '' : 'id', $pb.PbFieldType.O3)
     ..aOS(2, _omitFieldNames ? '' : 'path')
     ..aOS(3, _omitFieldNames ? '' : 'name')
     ..pPS(4, _omitFieldNames ? '' : 'scripts')
-    ..aOS(5, _omitFieldNames ? '' : 'nodeVersion')
+    ..aOS(5, _omitFieldNames ? '' : 'nodeVersion', protoName: 'nodeVersion')
     ..aOS(6, _omitFieldNames ? '' : 'defaultScript')
     ..aOB(7, _omitFieldNames ? '' : 'isAppValid', protoName: 'isAppValid')
     ..hasRequiredFields = false
@@ -98,22 +98,22 @@ class Node extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
   'Will be removed in next major version')
-  Node clone() => Node()..mergeFromMessage(this);
+  App clone() => App()..mergeFromMessage(this);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  Node copyWith(void Function(Node) updates) => super.copyWith((message) => updates(message as Node)) as Node;
+  App copyWith(void Function(App) updates) => super.copyWith((message) => updates(message as App)) as App;
 
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
-  static Node create() => Node._();
-  Node createEmptyInstance() => create();
-  static $pb.PbList<Node> createRepeated() => $pb.PbList<Node>();
+  static App create() => App._();
+  App createEmptyInstance() => create();
+  static $pb.PbList<App> createRepeated() => $pb.PbList<App>();
   @$core.pragma('dart2js:noInline')
-  static Node getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Node>(create);
-  static Node? _defaultInstance;
+  static App getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<App>(create);
+  static App? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.int get id => $_getIZ(0);
@@ -301,22 +301,22 @@ class UpdateDefaultNodejsVersionParams extends $pb.GeneratedMessage {
   void clearUpdateNvmrc() => clearField(3);
 }
 
-class NodeList extends $pb.GeneratedMessage {
-  factory NodeList({
-    $core.Iterable<Node>? nodes,
+class AppList extends $pb.GeneratedMessage {
+  factory AppList({
+    $core.Iterable<App>? apps,
   }) {
     final $result = create();
-    if (nodes != null) {
-      $result.nodes.addAll(nodes);
+    if (apps != null) {
+      $result.apps.addAll(apps);
     }
     return $result;
   }
-  NodeList._() : super();
-  factory NodeList.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory NodeList.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  AppList._() : super();
+  factory AppList.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory AppList.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'NodeList', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
-    ..pc<Node>(1, _omitFieldNames ? '' : 'nodes', $pb.PbFieldType.PM, subBuilder: Node.create)
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppList', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+    ..pc<App>(1, _omitFieldNames ? '' : 'apps', $pb.PbFieldType.PM, subBuilder: App.create)
     ..hasRequiredFields = false
   ;
 
@@ -324,29 +324,29 @@ class NodeList extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
   'Will be removed in next major version')
-  NodeList clone() => NodeList()..mergeFromMessage(this);
+  AppList clone() => AppList()..mergeFromMessage(this);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  NodeList copyWith(void Function(NodeList) updates) => super.copyWith((message) => updates(message as NodeList)) as NodeList;
+  AppList copyWith(void Function(AppList) updates) => super.copyWith((message) => updates(message as AppList)) as AppList;
 
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
-  static NodeList create() => NodeList._();
-  NodeList createEmptyInstance() => create();
-  static $pb.PbList<NodeList> createRepeated() => $pb.PbList<NodeList>();
+  static AppList create() => AppList._();
+  AppList createEmptyInstance() => create();
+  static $pb.PbList<AppList> createRepeated() => $pb.PbList<AppList>();
   @$core.pragma('dart2js:noInline')
-  static NodeList getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<NodeList>(create);
-  static NodeList? _defaultInstance;
+  static AppList getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AppList>(create);
+  static AppList? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.List<Node> get nodes => $_getList(0);
+  $core.List<App> get apps => $_getList(0);
 }
 
-class CreateRequest extends $pb.GeneratedMessage {
-  factory CreateRequest({
+class CreateAppPayload extends $pb.GeneratedMessage {
+  factory CreateAppPayload({
     $core.String? path,
     $core.String? name,
   }) {
@@ -359,11 +359,11 @@ class CreateRequest extends $pb.GeneratedMessage {
     }
     return $result;
   }
-  CreateRequest._() : super();
-  factory CreateRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory CreateRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  CreateAppPayload._() : super();
+  factory CreateAppPayload.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory CreateAppPayload.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'CreateRequest', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'CreateAppPayload', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'path')
     ..aOS(2, _omitFieldNames ? '' : 'name')
     ..hasRequiredFields = false
@@ -373,22 +373,22 @@ class CreateRequest extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
   'Will be removed in next major version')
-  CreateRequest clone() => CreateRequest()..mergeFromMessage(this);
+  CreateAppPayload clone() => CreateAppPayload()..mergeFromMessage(this);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  CreateRequest copyWith(void Function(CreateRequest) updates) => super.copyWith((message) => updates(message as CreateRequest)) as CreateRequest;
+  CreateAppPayload copyWith(void Function(CreateAppPayload) updates) => super.copyWith((message) => updates(message as CreateAppPayload)) as CreateAppPayload;
 
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
-  static CreateRequest create() => CreateRequest._();
-  CreateRequest createEmptyInstance() => create();
-  static $pb.PbList<CreateRequest> createRepeated() => $pb.PbList<CreateRequest>();
+  static CreateAppPayload create() => CreateAppPayload._();
+  CreateAppPayload createEmptyInstance() => create();
+  static $pb.PbList<CreateAppPayload> createRepeated() => $pb.PbList<CreateAppPayload>();
   @$core.pragma('dart2js:noInline')
-  static CreateRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<CreateRequest>(create);
-  static CreateRequest? _defaultInstance;
+  static CreateAppPayload getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<CreateAppPayload>(create);
+  static CreateAppPayload? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get path => $_getSZ(0);
@@ -409,8 +409,8 @@ class CreateRequest extends $pb.GeneratedMessage {
   void clearName() => clearField(2);
 }
 
-class ReadRequest extends $pb.GeneratedMessage {
-  factory ReadRequest({
+class AppIdPayload extends $pb.GeneratedMessage {
+  factory AppIdPayload({
     $core.int? id,
   }) {
     final $result = create();
@@ -419,11 +419,11 @@ class ReadRequest extends $pb.GeneratedMessage {
     }
     return $result;
   }
-  ReadRequest._() : super();
-  factory ReadRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory ReadRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  AppIdPayload._() : super();
+  factory AppIdPayload.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory AppIdPayload.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'ReadRequest', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppIdPayload', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
     ..a<$core.int>(1, _omitFieldNames ? '' : 'id', $pb.PbFieldType.O3)
     ..hasRequiredFields = false
   ;
@@ -432,22 +432,22 @@ class ReadRequest extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
   'Will be removed in next major version')
-  ReadRequest clone() => ReadRequest()..mergeFromMessage(this);
+  AppIdPayload clone() => AppIdPayload()..mergeFromMessage(this);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  ReadRequest copyWith(void Function(ReadRequest) updates) => super.copyWith((message) => updates(message as ReadRequest)) as ReadRequest;
+  AppIdPayload copyWith(void Function(AppIdPayload) updates) => super.copyWith((message) => updates(message as AppIdPayload)) as AppIdPayload;
 
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
-  static ReadRequest create() => ReadRequest._();
-  ReadRequest createEmptyInstance() => create();
-  static $pb.PbList<ReadRequest> createRepeated() => $pb.PbList<ReadRequest>();
+  static AppIdPayload create() => AppIdPayload._();
+  AppIdPayload createEmptyInstance() => create();
+  static $pb.PbList<AppIdPayload> createRepeated() => $pb.PbList<AppIdPayload>();
   @$core.pragma('dart2js:noInline')
-  static ReadRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<ReadRequest>(create);
-  static ReadRequest? _defaultInstance;
+  static AppIdPayload getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AppIdPayload>(create);
+  static AppIdPayload? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.int get id => $_getIZ(0);
@@ -559,8 +559,8 @@ class StatusResponse extends $pb.GeneratedMessage {
   void clearStatus() => clearField(1);
 }
 
-class StopNodeRequest extends $pb.GeneratedMessage {
-  factory StopNodeRequest({
+class StopAppRequest extends $pb.GeneratedMessage {
+  factory StopAppRequest({
     $core.int? id,
   }) {
     final $result = create();
@@ -569,11 +569,11 @@ class StopNodeRequest extends $pb.GeneratedMessage {
     }
     return $result;
   }
-  StopNodeRequest._() : super();
-  factory StopNodeRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory StopNodeRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  StopAppRequest._() : super();
+  factory StopAppRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory StopAppRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'StopNodeRequest', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'StopAppRequest', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
     ..a<$core.int>(1, _omitFieldNames ? '' : 'id', $pb.PbFieldType.O3)
     ..hasRequiredFields = false
   ;
@@ -582,22 +582,22 @@ class StopNodeRequest extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
   'Will be removed in next major version')
-  StopNodeRequest clone() => StopNodeRequest()..mergeFromMessage(this);
+  StopAppRequest clone() => StopAppRequest()..mergeFromMessage(this);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  StopNodeRequest copyWith(void Function(StopNodeRequest) updates) => super.copyWith((message) => updates(message as StopNodeRequest)) as StopNodeRequest;
+  StopAppRequest copyWith(void Function(StopAppRequest) updates) => super.copyWith((message) => updates(message as StopAppRequest)) as StopAppRequest;
 
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
-  static StopNodeRequest create() => StopNodeRequest._();
-  StopNodeRequest createEmptyInstance() => create();
-  static $pb.PbList<StopNodeRequest> createRepeated() => $pb.PbList<StopNodeRequest>();
+  static StopAppRequest create() => StopAppRequest._();
+  StopAppRequest createEmptyInstance() => create();
+  static $pb.PbList<StopAppRequest> createRepeated() => $pb.PbList<StopAppRequest>();
   @$core.pragma('dart2js:noInline')
-  static StopNodeRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<StopNodeRequest>(create);
-  static StopNodeRequest? _defaultInstance;
+  static StopAppRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<StopAppRequest>(create);
+  static StopAppRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.int get id => $_getIZ(0);
@@ -609,8 +609,8 @@ class StopNodeRequest extends $pb.GeneratedMessage {
   void clearId() => clearField(1);
 }
 
-class RunNodeRequest extends $pb.GeneratedMessage {
-  factory RunNodeRequest({
+class RunAppRequest extends $pb.GeneratedMessage {
+  factory RunAppRequest({
     $core.int? id,
     $core.String? command,
     $core.String? nodeVersion,
@@ -627,11 +627,11 @@ class RunNodeRequest extends $pb.GeneratedMessage {
     }
     return $result;
   }
-  RunNodeRequest._() : super();
-  factory RunNodeRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory RunNodeRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  RunAppRequest._() : super();
+  factory RunAppRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory RunAppRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'RunNodeRequest', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'RunAppRequest', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
     ..a<$core.int>(1, _omitFieldNames ? '' : 'id', $pb.PbFieldType.O3)
     ..aOS(2, _omitFieldNames ? '' : 'command')
     ..aOS(3, _omitFieldNames ? '' : 'nodeVersion', protoName: 'nodeVersion')
@@ -642,22 +642,22 @@ class RunNodeRequest extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
   'Will be removed in next major version')
-  RunNodeRequest clone() => RunNodeRequest()..mergeFromMessage(this);
+  RunAppRequest clone() => RunAppRequest()..mergeFromMessage(this);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  RunNodeRequest copyWith(void Function(RunNodeRequest) updates) => super.copyWith((message) => updates(message as RunNodeRequest)) as RunNodeRequest;
+  RunAppRequest copyWith(void Function(RunAppRequest) updates) => super.copyWith((message) => updates(message as RunAppRequest)) as RunAppRequest;
 
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
-  static RunNodeRequest create() => RunNodeRequest._();
-  RunNodeRequest createEmptyInstance() => create();
-  static $pb.PbList<RunNodeRequest> createRepeated() => $pb.PbList<RunNodeRequest>();
+  static RunAppRequest create() => RunAppRequest._();
+  RunAppRequest createEmptyInstance() => create();
+  static $pb.PbList<RunAppRequest> createRepeated() => $pb.PbList<RunAppRequest>();
   @$core.pragma('dart2js:noInline')
-  static RunNodeRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<RunNodeRequest>(create);
-  static RunNodeRequest? _defaultInstance;
+  static RunAppRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<RunAppRequest>(create);
+  static RunAppRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.int get id => $_getIZ(0);
@@ -687,8 +687,8 @@ class RunNodeRequest extends $pb.GeneratedMessage {
   void clearNodeVersion() => clearField(3);
 }
 
-class NodeRunTime extends $pb.GeneratedMessage {
-  factory NodeRunTime({
+class AppRunTime extends $pb.GeneratedMessage {
+  factory AppRunTime({
     $core.int? id,
     $core.String? status,
     $core.int? pid,
@@ -725,11 +725,11 @@ class NodeRunTime extends $pb.GeneratedMessage {
     }
     return $result;
   }
-  NodeRunTime._() : super();
-  factory NodeRunTime.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
-  factory NodeRunTime.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  AppRunTime._() : super();
+  factory AppRunTime.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory AppRunTime.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'NodeRunTime', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'AppRunTime', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
     ..a<$core.int>(1, _omitFieldNames ? '' : 'id', $pb.PbFieldType.O3)
     ..aOS(2, _omitFieldNames ? '' : 'status')
     ..a<$core.int>(3, _omitFieldNames ? '' : 'pid', $pb.PbFieldType.O3)
@@ -745,22 +745,22 @@ class NodeRunTime extends $pb.GeneratedMessage {
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
   'Will be removed in next major version')
-  NodeRunTime clone() => NodeRunTime()..mergeFromMessage(this);
+  AppRunTime clone() => AppRunTime()..mergeFromMessage(this);
   @$core.Deprecated(
   'Using this can add significant overhead to your binary. '
   'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
   'Will be removed in next major version')
-  NodeRunTime copyWith(void Function(NodeRunTime) updates) => super.copyWith((message) => updates(message as NodeRunTime)) as NodeRunTime;
+  AppRunTime copyWith(void Function(AppRunTime) updates) => super.copyWith((message) => updates(message as AppRunTime)) as AppRunTime;
 
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
-  static NodeRunTime create() => NodeRunTime._();
-  NodeRunTime createEmptyInstance() => create();
-  static $pb.PbList<NodeRunTime> createRepeated() => $pb.PbList<NodeRunTime>();
+  static AppRunTime create() => AppRunTime._();
+  AppRunTime createEmptyInstance() => create();
+  static $pb.PbList<AppRunTime> createRepeated() => $pb.PbList<AppRunTime>();
   @$core.pragma('dart2js:noInline')
-  static NodeRunTime getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<NodeRunTime>(create);
-  static NodeRunTime? _defaultInstance;
+  static AppRunTime getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<AppRunTime>(create);
+  static AppRunTime? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.int get id => $_getIZ(0);
@@ -960,14 +960,14 @@ class TotalEnviromentUsage extends $pb.GeneratedMessage {
 class ProcessInfo extends $pb.GeneratedMessage {
   factory ProcessInfo({
     TotalEnviromentUsage? environment,
-    $core.Iterable<NodeRunTime>? nodes,
+    $core.Iterable<AppRunTime>? apps,
   }) {
     final $result = create();
     if (environment != null) {
       $result.environment = environment;
     }
-    if (nodes != null) {
-      $result.nodes.addAll(nodes);
+    if (apps != null) {
+      $result.apps.addAll(apps);
     }
     return $result;
   }
@@ -977,7 +977,7 @@ class ProcessInfo extends $pb.GeneratedMessage {
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'ProcessInfo', package: const $pb.PackageName(_omitMessageNames ? '' : 'api'), createEmptyInstance: create)
     ..aOM<TotalEnviromentUsage>(1, _omitFieldNames ? '' : 'environment', subBuilder: TotalEnviromentUsage.create)
-    ..pc<NodeRunTime>(2, _omitFieldNames ? '' : 'nodes', $pb.PbFieldType.PM, subBuilder: NodeRunTime.create)
+    ..pc<AppRunTime>(2, _omitFieldNames ? '' : 'apps', $pb.PbFieldType.PM, subBuilder: AppRunTime.create)
     ..hasRequiredFields = false
   ;
 
@@ -1014,7 +1014,7 @@ class ProcessInfo extends $pb.GeneratedMessage {
   TotalEnviromentUsage ensureEnvironment() => $_ensure(0);
 
   @$pb.TagNumber(2)
-  $core.List<NodeRunTime> get nodes => $_getList(1);
+  $core.List<AppRunTime> get apps => $_getList(1);
 }
 
 class NodejsVersionsInfo extends $pb.GeneratedMessage {

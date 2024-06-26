@@ -1,6 +1,6 @@
 //
 //  Generated code. Do not modify.
-//  source: nodes.proto
+//  source: api.proto
 //
 // @dart = 2.12
 
@@ -22,26 +22,26 @@ const EmptyParams$json = {
 final $typed_data.Uint8List emptyParamsDescriptor = $convert.base64Decode(
     'CgtFbXB0eVBhcmFtcw==');
 
-@$core.Deprecated('Use nodeDescriptor instead')
-const Node$json = {
-  '1': 'Node',
+@$core.Deprecated('Use appDescriptor instead')
+const App$json = {
+  '1': 'App',
   '2': [
     {'1': 'id', '3': 1, '4': 1, '5': 5, '10': 'id'},
     {'1': 'path', '3': 2, '4': 1, '5': 9, '10': 'path'},
     {'1': 'name', '3': 3, '4': 1, '5': 9, '10': 'name'},
     {'1': 'scripts', '3': 4, '4': 3, '5': 9, '10': 'scripts'},
-    {'1': 'node_version', '3': 5, '4': 1, '5': 9, '10': 'nodeVersion'},
+    {'1': 'nodeVersion', '3': 5, '4': 1, '5': 9, '10': 'nodeVersion'},
     {'1': 'default_script', '3': 6, '4': 1, '5': 9, '10': 'defaultScript'},
     {'1': 'isAppValid', '3': 7, '4': 1, '5': 8, '10': 'isAppValid'},
   ],
 };
 
-/// Descriptor for `Node`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List nodeDescriptor = $convert.base64Decode(
-    'CgROb2RlEg4KAmlkGAEgASgFUgJpZBISCgRwYXRoGAIgASgJUgRwYXRoEhIKBG5hbWUYAyABKA'
-    'lSBG5hbWUSGAoHc2NyaXB0cxgEIAMoCVIHc2NyaXB0cxIhCgxub2RlX3ZlcnNpb24YBSABKAlS'
-    'C25vZGVWZXJzaW9uEiUKDmRlZmF1bHRfc2NyaXB0GAYgASgJUg1kZWZhdWx0U2NyaXB0Eh4KCm'
-    'lzQXBwVmFsaWQYByABKAhSCmlzQXBwVmFsaWQ=');
+/// Descriptor for `App`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List appDescriptor = $convert.base64Decode(
+    'CgNBcHASDgoCaWQYASABKAVSAmlkEhIKBHBhdGgYAiABKAlSBHBhdGgSEgoEbmFtZRgDIAEoCV'
+    'IEbmFtZRIYCgdzY3JpcHRzGAQgAygJUgdzY3JpcHRzEiAKC25vZGVWZXJzaW9uGAUgASgJUgtu'
+    'b2RlVmVyc2lvbhIlCg5kZWZhdWx0X3NjcmlwdBgGIAEoCVINZGVmYXVsdFNjcmlwdBIeCgppc0'
+    'FwcFZhbGlkGAcgASgIUgppc0FwcFZhbGlk');
 
 @$core.Deprecated('Use requestVersionDescriptor instead')
 const RequestVersion$json = {
@@ -70,43 +70,43 @@ final $typed_data.Uint8List updateDefaultNodejsVersionParamsDescriptor = $conver
     'CiBVcGRhdGVEZWZhdWx0Tm9kZWpzVmVyc2lvblBhcmFtcxIOCgJpZBgBIAEoBVICaWQSGAoHdm'
     'Vyc2lvbhgCIAEoCVIHdmVyc2lvbhIgCgt1cGRhdGVOdm1yYxgDIAEoCFILdXBkYXRlTnZtcmM=');
 
-@$core.Deprecated('Use nodeListDescriptor instead')
-const NodeList$json = {
-  '1': 'NodeList',
+@$core.Deprecated('Use appListDescriptor instead')
+const AppList$json = {
+  '1': 'AppList',
   '2': [
-    {'1': 'nodes', '3': 1, '4': 3, '5': 11, '6': '.api.Node', '10': 'nodes'},
+    {'1': 'apps', '3': 1, '4': 3, '5': 11, '6': '.api.App', '10': 'apps'},
   ],
 };
 
-/// Descriptor for `NodeList`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List nodeListDescriptor = $convert.base64Decode(
-    'CghOb2RlTGlzdBIfCgVub2RlcxgBIAMoCzIJLmFwaS5Ob2RlUgVub2Rlcw==');
+/// Descriptor for `AppList`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List appListDescriptor = $convert.base64Decode(
+    'CgdBcHBMaXN0EhwKBGFwcHMYASADKAsyCC5hcGkuQXBwUgRhcHBz');
 
-@$core.Deprecated('Use createRequestDescriptor instead')
-const CreateRequest$json = {
-  '1': 'CreateRequest',
+@$core.Deprecated('Use createAppPayloadDescriptor instead')
+const CreateAppPayload$json = {
+  '1': 'CreateAppPayload',
   '2': [
     {'1': 'path', '3': 1, '4': 1, '5': 9, '10': 'path'},
     {'1': 'name', '3': 2, '4': 1, '5': 9, '10': 'name'},
   ],
 };
 
-/// Descriptor for `CreateRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List createRequestDescriptor = $convert.base64Decode(
-    'Cg1DcmVhdGVSZXF1ZXN0EhIKBHBhdGgYASABKAlSBHBhdGgSEgoEbmFtZRgCIAEoCVIEbmFtZQ'
-    '==');
+/// Descriptor for `CreateAppPayload`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List createAppPayloadDescriptor = $convert.base64Decode(
+    'ChBDcmVhdGVBcHBQYXlsb2FkEhIKBHBhdGgYASABKAlSBHBhdGgSEgoEbmFtZRgCIAEoCVIEbm'
+    'FtZQ==');
 
-@$core.Deprecated('Use readRequestDescriptor instead')
-const ReadRequest$json = {
-  '1': 'ReadRequest',
+@$core.Deprecated('Use appIdPayloadDescriptor instead')
+const AppIdPayload$json = {
+  '1': 'AppIdPayload',
   '2': [
     {'1': 'id', '3': 1, '4': 1, '5': 5, '10': 'id'},
   ],
 };
 
-/// Descriptor for `ReadRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List readRequestDescriptor = $convert.base64Decode(
-    'CgtSZWFkUmVxdWVzdBIOCgJpZBgBIAEoBVICaWQ=');
+/// Descriptor for `AppIdPayload`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List appIdPayloadDescriptor = $convert.base64Decode(
+    'CgxBcHBJZFBheWxvYWQSDgoCaWQYASABKAVSAmlk');
 
 @$core.Deprecated('Use removeDescriptor instead')
 const Remove$json = {
@@ -132,21 +132,21 @@ const StatusResponse$json = {
 final $typed_data.Uint8List statusResponseDescriptor = $convert.base64Decode(
     'Cg5TdGF0dXNSZXNwb25zZRIWCgZzdGF0dXMYASABKAlSBnN0YXR1cw==');
 
-@$core.Deprecated('Use stopNodeRequestDescriptor instead')
-const StopNodeRequest$json = {
-  '1': 'StopNodeRequest',
+@$core.Deprecated('Use stopAppRequestDescriptor instead')
+const StopAppRequest$json = {
+  '1': 'StopAppRequest',
   '2': [
     {'1': 'id', '3': 1, '4': 1, '5': 5, '10': 'id'},
   ],
 };
 
-/// Descriptor for `StopNodeRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List stopNodeRequestDescriptor = $convert.base64Decode(
-    'Cg9TdG9wTm9kZVJlcXVlc3QSDgoCaWQYASABKAVSAmlk');
+/// Descriptor for `StopAppRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List stopAppRequestDescriptor = $convert.base64Decode(
+    'Cg5TdG9wQXBwUmVxdWVzdBIOCgJpZBgBIAEoBVICaWQ=');
 
-@$core.Deprecated('Use runNodeRequestDescriptor instead')
-const RunNodeRequest$json = {
-  '1': 'RunNodeRequest',
+@$core.Deprecated('Use runAppRequestDescriptor instead')
+const RunAppRequest$json = {
+  '1': 'RunAppRequest',
   '2': [
     {'1': 'id', '3': 1, '4': 1, '5': 5, '10': 'id'},
     {'1': 'command', '3': 2, '4': 1, '5': 9, '10': 'command'},
@@ -154,14 +154,14 @@ const RunNodeRequest$json = {
   ],
 };
 
-/// Descriptor for `RunNodeRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List runNodeRequestDescriptor = $convert.base64Decode(
-    'Cg5SdW5Ob2RlUmVxdWVzdBIOCgJpZBgBIAEoBVICaWQSGAoHY29tbWFuZBgCIAEoCVIHY29tbW'
-    'FuZBIgCgtub2RlVmVyc2lvbhgDIAEoCVILbm9kZVZlcnNpb24=');
+/// Descriptor for `RunAppRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List runAppRequestDescriptor = $convert.base64Decode(
+    'Cg1SdW5BcHBSZXF1ZXN0Eg4KAmlkGAEgASgFUgJpZBIYCgdjb21tYW5kGAIgASgJUgdjb21tYW'
+    '5kEiAKC25vZGVWZXJzaW9uGAMgASgJUgtub2RlVmVyc2lvbg==');
 
-@$core.Deprecated('Use nodeRunTimeDescriptor instead')
-const NodeRunTime$json = {
-  '1': 'NodeRunTime',
+@$core.Deprecated('Use appRunTimeDescriptor instead')
+const AppRunTime$json = {
+  '1': 'AppRunTime',
   '2': [
     {'1': 'id', '3': 1, '4': 1, '5': 5, '10': 'id'},
     {'1': 'status', '3': 2, '4': 1, '5': 9, '10': 'status'},
@@ -174,12 +174,12 @@ const NodeRunTime$json = {
   ],
 };
 
-/// Descriptor for `NodeRunTime`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List nodeRunTimeDescriptor = $convert.base64Decode(
-    'CgtOb2RlUnVuVGltZRIOCgJpZBgBIAEoBVICaWQSFgoGc3RhdHVzGAIgASgJUgZzdGF0dXMSEA'
-    'oDcGlkGAMgASgFUgNwaWQSEAoDY3B1GAQgASgFUgNjcHUSEAoDbWVtGAUgASgFUgNtZW0SEAoD'
-    'c2lkGAYgASgFUgNzaWQSFAoFcG9ydHMYByADKAVSBXBvcnRzEhYKBmJyYW5jaBgIIAEoCVIGYn'
-    'JhbmNo');
+/// Descriptor for `AppRunTime`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List appRunTimeDescriptor = $convert.base64Decode(
+    'CgpBcHBSdW5UaW1lEg4KAmlkGAEgASgFUgJpZBIWCgZzdGF0dXMYAiABKAlSBnN0YXR1cxIQCg'
+    'NwaWQYAyABKAVSA3BpZBIQCgNjcHUYBCABKAVSA2NwdRIQCgNtZW0YBSABKAVSA21lbRIQCgNz'
+    'aWQYBiABKAVSA3NpZBIUCgVwb3J0cxgHIAMoBVIFcG9ydHMSFgoGYnJhbmNoGAggASgJUgZicm'
+    'FuY2g=');
 
 @$core.Deprecated('Use dataRequestDescriptor instead')
 const DataRequest$json = {
@@ -213,15 +213,14 @@ const ProcessInfo$json = {
   '1': 'ProcessInfo',
   '2': [
     {'1': 'environment', '3': 1, '4': 1, '5': 11, '6': '.api.TotalEnviromentUsage', '10': 'environment'},
-    {'1': 'nodes', '3': 2, '4': 3, '5': 11, '6': '.api.NodeRunTime', '10': 'nodes'},
+    {'1': 'apps', '3': 2, '4': 3, '5': 11, '6': '.api.AppRunTime', '10': 'apps'},
   ],
 };
 
 /// Descriptor for `ProcessInfo`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List processInfoDescriptor = $convert.base64Decode(
     'CgtQcm9jZXNzSW5mbxI7CgtlbnZpcm9ubWVudBgBIAEoCzIZLmFwaS5Ub3RhbEVudmlyb21lbn'
-    'RVc2FnZVILZW52aXJvbm1lbnQSJgoFbm9kZXMYAiADKAsyEC5hcGkuTm9kZVJ1blRpbWVSBW5v'
-    'ZGVz');
+    'RVc2FnZVILZW52aXJvbm1lbnQSIwoEYXBwcxgCIAMoCzIPLmFwaS5BcHBSdW5UaW1lUgRhcHBz');
 
 @$core.Deprecated('Use nodejsVersionsInfoDescriptor instead')
 const NodejsVersionsInfo$json = {

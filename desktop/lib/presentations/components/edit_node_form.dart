@@ -1,4 +1,4 @@
-import 'package:desktop/dal/models/node_ui.dart';
+import 'package:desktop/dal/models/app_ui.dart';
 import 'package:desktop/utils/colors.dart';
 import 'package:flutter/material.dart' hide ProgressIndicator;
 import 'package:reactive_forms/reactive_forms.dart';
@@ -33,7 +33,7 @@ import 'package:reactive_forms/reactive_forms.dart';
 // ignore: must_be_immutable
 class EditNodeForm extends StatefulWidget {
   Function onSubmit;
-  NodeUi? selectedNode;
+  AppUi? selectedNode;
 
   EditNodeForm({this.selectedNode, required this.onSubmit, super.key});
 
@@ -42,7 +42,7 @@ class EditNodeForm extends StatefulWidget {
 }
 
 class _EditNodeFormState extends State<EditNodeForm> {
-  FormGroup buildForm(NodeUi? selectedNode) => fb.group(<String, Object>{
+  FormGroup buildForm(AppUi? selectedNode) => fb.group(<String, Object>{
         'name': FormControl<String>(
             value: selectedNode?.name ?? "", validators: [Validators.required]),
         'path':

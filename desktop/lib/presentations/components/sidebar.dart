@@ -6,9 +6,9 @@ import 'package:sidebarx/sidebarx.dart';
 class Sidebar extends StatelessWidget {
   final SidebarXController controller;
 
-  Sidebar({
+  const Sidebar({
+    super.key,
     required this.controller,
-    Key? key,
   });
 
   @override
@@ -72,7 +72,7 @@ class Sidebar extends StatelessWidget {
         ),
         SidebarXItem(
           icon: Icons.share,
-          label: 'Nodes',
+          label: 'Apps',
         ),
         SidebarXItem(
           icon: IconSet.npm,

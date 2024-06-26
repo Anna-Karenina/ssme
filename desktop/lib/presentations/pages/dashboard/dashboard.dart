@@ -1,8 +1,8 @@
 import 'package:desktop/dal/models/enviroment_ui.dart';
-import 'package:desktop/dal/models/node_ui.dart';
+import 'package:desktop/dal/models/app_ui.dart';
 import 'package:desktop/di/di.dart';
-import 'package:desktop/pb/nodes.pbgrpc.dart';
-import 'package:desktop/presentations/components/node_table.dart';
+import 'package:desktop/pb/api.pb.dart';
+import 'package:desktop/presentations/components/apps_table.dart';
 import 'package:desktop/utils/colors.dart';
 import 'package:desktop/utils/inc_key.dart';
 import 'package:flutter/material.dart';
@@ -20,20 +20,20 @@ class _DashboardState extends State<Dashboard> {
   final searchController = TextEditingController();
 
   bool _onlyActive = false;
-  List<NodeTableColumn> columns = [
-    NodeTableColumn(isActive: true, label: "name"),
-    NodeTableColumn(isActive: true, label: "hidden"),
-    NodeTableColumn(isActive: true, label: "path"),
-    NodeTableColumn(isActive: true, label: "status"),
-    NodeTableColumn(isActive: true, label: "pid"),
-    NodeTableColumn(isActive: true, label: "sid"),
-    NodeTableColumn(isActive: true, label: "cpu"),
-    NodeTableColumn(isActive: true, label: "mem"),
-    NodeTableColumn(isActive: true, label: "port"),
-    NodeTableColumn(isActive: true, label: "branch"),
+  List<AppTableColumn> columns = [
+    AppTableColumn(isActive: true, label: "name"),
+    AppTableColumn(isActive: true, label: "hidden"),
+    AppTableColumn(isActive: true, label: "path"),
+    AppTableColumn(isActive: true, label: "status"),
+    AppTableColumn(isActive: true, label: "pid"),
+    AppTableColumn(isActive: true, label: "sid"),
+    AppTableColumn(isActive: true, label: "cpu"),
+    AppTableColumn(isActive: true, label: "mem"),
+    AppTableColumn(isActive: true, label: "port"),
+    AppTableColumn(isActive: true, label: "branch"),
   ];
 
-  List<NodeUi> nodes = [];
+  List<AppUi> nodes = [];
   bool _isTableLoading = true;
   String _tableKey = "0";
 
@@ -254,7 +254,7 @@ class _DashboardState extends State<Dashboard> {
                 visible: !_isTableLoading,
                 child: Container(
                   color: Colors.transparent,
-                  child: NodeTable(
+                  child: AppTable(
                       key: Key(_tableKey),
                       runApp: _runApp,
                       stopApp: _stopApp,
@@ -281,7 +281,7 @@ class _DashboardState extends State<Dashboard> {
       // _observeEnv();
       await _getNodeJsInfo();
 
-      final apiNodes = await grpc.nodeClient!.readAllNodes(EmptyParams());
+      final apiNodes = await grpc.appsClient!.readAllApps(EmptyParams());
       setState(() => nodes = nodesUifromRequest(apiNodes));
     } catch (e) {
       print(e.toString());
@@ -292,10 +292,10 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  _tableMenuAction(NodeTableColumn col) {
+  _tableMenuAction(AppTableColumn col) {
     var newCols = columns
         .map((e) => e.label == col.label
-            ? NodeTableColumn(isActive: !col.isActive, label: col.label)
+            ? AppTableColumn(isActive: !col.isActive, label: col.label)
             : e)
         .toList();
     if (mounted) {
@@ -303,10 +303,10 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  Future<void> _runApp(NodeUi curerntNode) async {
+  Future<void> _runApp(AppUi curerntNode) async {
     try {
-      final apiNode = await grpc.nodeClient!
-          .runNode(RunNodeRequest(command: "dev", id: curerntNode.id));
+      final apiNode = await grpc.appsClient!.runApp(RunAppRequest(
+          command: curerntNode.defaultScript, id: curerntNode.id));
       final node = nodeUiFromRequest(apiNode, curerntNode);
       final newNodes = nodes.map((n) => n.id == node.id ? node : n).toList();
       setState(() {
@@ -318,10 +318,10 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  Future<void> _stopApp(NodeUi curerntNode) async {
+  Future<void> _stopApp(AppUi curerntNode) async {
     try {
       final apiNode =
-          await grpc.nodeClient!.stopNode(StopNodeRequest(id: curerntNode.id));
+          await grpc.appsClient!.stopApp(StopAppRequest(id: curerntNode.id));
       final node = nodeUiFromRequest(apiNode, curerntNode);
       final newNodes = nodes.map((n) => n.id == node.id ? node : n).toList();
       setState(() {
@@ -338,8 +338,8 @@ class _DashboardState extends State<Dashboard> {
       final res = grpc.envClient!.processStream(DataRequest(id: "1"));
       await for (var message in res) {
         final newNodes = nodes.map((node) {
-          final curNode = message.nodes
-              .firstWhereOrNull((element) => element.id == node.id);
+          final curNode =
+              message.apps.firstWhereOrNull((element) => element.id == node.id);
           if (curNode != null) {
             return nodeUiFromRequest(curNode, node);
           } else {
@@ -381,16 +381,16 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  Future<NodeUi?> _syncAppData(int id) async {
+  Future<AppUi?> _syncAppData(int id) async {
     try {
       await _getNodeJsInfo();
-      await grpc.nodeClient!.syncAppScripts(ReadRequest(id: id));
-      final apiNode = await grpc.nodeClient!.readNode(ReadRequest(id: id));
+      await grpc.appsClient!.syncAppScripts(AppIdPayload(id: id));
+      final apiNode = await grpc.appsClient!.readApp(AppIdPayload(id: id));
       var updatedNode = null;
 
-      final newNodes = nodes.map<NodeUi>((n) {
+      final newNodes = nodes.map<AppUi>((n) {
         if (n.id == id) {
-          updatedNode = NodeUi(
+          updatedNode = AppUi(
             id: id,
             name: apiNode.name,
             isAppValid: apiNode.isAppValid,
@@ -418,7 +418,7 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  Future<void> _saveNewNodeJsVersion(String version, NodeUi node) async {
+  Future<void> _saveNewNodeJsVersion(String version, AppUi node) async {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -450,13 +450,13 @@ class _DashboardState extends State<Dashboard> {
       int id, String script, bool saveAsDefault) async {
     try {
       if (saveAsDefault) {
-        await grpc.nodeClient!.updateDefaultRunScript(
+        await grpc.appsClient!.updateDefaultRunScript(
             UpdateDefaultRunScriptParams(id: id, script: script));
       }
 
       final newNodes = nodes.map((n) {
         return n.id == id
-            ? NodeUi(
+            ? AppUi(
                 id: n.id,
                 name: n.name,
                 path: n.path,

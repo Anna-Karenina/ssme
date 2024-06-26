@@ -1,6 +1,6 @@
-import 'package:desktop/dal/models/node_ui.dart';
+import 'package:desktop/dal/models/app_ui.dart';
 import 'package:desktop/di/di.dart';
-import 'package:desktop/pb/nodes.pb.dart';
+import 'package:desktop/pb/api.pb.dart';
 import 'package:desktop/presentations/components/edit_node_form.dart';
 import 'package:desktop/utils/colors.dart';
 import 'package:desktop/utils/inc_key.dart';
@@ -15,8 +15,8 @@ class Nodes extends StatefulWidget {
 
 class _NodesState extends State<Nodes> {
   final grpc = DiManager.getgRpc();
-  List<NodeUi> nodes = [];
-  NodeUi? _selectedNode;
+  List<AppUi> nodes = [];
+  AppUi? _selectedNode;
   String _editNodeFormKey = "0";
 
   final searchController = TextEditingController();
@@ -115,13 +115,13 @@ class _NodesState extends State<Nodes> {
   }
 
   Future<void> _createNode(String name, String path) async {
-    await grpc.nodeClient!.createNode(CreateRequest(path: path, name: name));
+    await grpc.appsClient!.createApp(CreateAppPayload(path: path, name: name));
     asyncInit();
   }
 
   Future<void> asyncInit() async {
     try {
-      final apiNodes = await grpc.nodeClient!.readAllNodes(EmptyParams());
+      final apiNodes = await grpc.appsClient!.readAllApps(EmptyParams());
       setState(() => nodes = nodesUifromRequest(apiNodes).toList());
     } catch (e) {
       print(e.toString());
@@ -130,7 +130,7 @@ class _NodesState extends State<Nodes> {
     }
   }
 
-  void _selectNode(NodeUi? node) {
+  void _selectNode(AppUi? node) {
     setState(() {
       _selectedNode = node;
       incKey(_editNodeFormKey);

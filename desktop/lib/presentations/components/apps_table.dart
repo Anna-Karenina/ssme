@@ -1,29 +1,29 @@
-import 'package:desktop/dal/models/node_ui.dart';
-import 'package:desktop/pb/nodes.pb.dart';
+import 'package:desktop/dal/models/app_ui.dart';
+import 'package:desktop/pb/api.pb.dart';
 import 'package:desktop/presentations/components/app_settings_dialog.dart';
 import 'package:desktop/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_table/flutter_expandable_table.dart';
 
-class NodeTableColumn {
+class AppTableColumn {
   final String label;
   final bool isActive;
 
-  NodeTableColumn({required this.isActive, required this.label});
+  AppTableColumn({required this.isActive, required this.label});
 }
 
-class NodeTable extends StatefulWidget {
-  final List<NodeTableColumn> columns;
-  final List<NodeUi> nodes;
+class AppTable extends StatefulWidget {
+  final List<AppTableColumn> columns;
+  final List<AppUi> nodes;
   final NodejsVersionsInfo nodejsVersionsInfo;
 
-  final Future<void> Function(NodeUi) runApp;
-  final Future<void> Function(NodeUi) stopApp;
-  final Future<void> Function(String, NodeUi) saveNewNodeJsVersion;
+  final Future<void> Function(AppUi) runApp;
+  final Future<void> Function(AppUi) stopApp;
+  final Future<void> Function(String, AppUi) saveNewNodeJsVersion;
   final Future<void> Function(int, String, bool) updateDefaultScript;
-  final Future<NodeUi?> Function(int) syncAppData;
+  final Future<AppUi?> Function(int) syncAppData;
 
-  const NodeTable(
+  const AppTable(
       {super.key,
       required this.runApp,
       required this.stopApp,
@@ -35,10 +35,10 @@ class NodeTable extends StatefulWidget {
       required this.updateDefaultScript});
 
   @override
-  State<NodeTable> createState() => _NodeTableState();
+  State<AppTable> createState() => _AppTableState();
 }
 
-class _NodeTableState extends State<NodeTable> {
+class _AppTableState extends State<AppTable> {
   List<ExpandableTableHeader> headers = [];
 
   @override
@@ -90,7 +90,7 @@ class _NodeTableState extends State<NodeTable> {
     );
   }
 
-  ExpandableTableCell buildFirstRowCell(NodeUi node) {
+  ExpandableTableCell buildFirstRowCell(AppUi node) {
     return ExpandableTableCell(
         child: DefaultCellCard(
       child: Padding(
@@ -108,7 +108,7 @@ class _NodeTableState extends State<NodeTable> {
     ));
   }
 
-  List<ExpandableTableCell> _buildCells(NodeUi row) {
+  List<ExpandableTableCell> _buildCells(AppUi row) {
     List<dynamic> list = [
       row.path,
       row.status,
@@ -148,7 +148,7 @@ class _NodeTableState extends State<NodeTable> {
     return cells;
   }
 
-  Widget _addActions(NodeUi node) {
+  Widget _addActions(AppUi node) {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: Container(
@@ -165,7 +165,7 @@ class _NodeTableState extends State<NodeTable> {
     );
   }
 
-  _showAppSettingsDialog(NodeUi node) {
+  _showAppSettingsDialog(AppUi node) {
     return IconButton(
         onPressed: () => showDialog(
               context: context,
@@ -185,7 +185,7 @@ class _NodeTableState extends State<NodeTable> {
         icon: const Icon(Icons.more_vert, color: CustomColors.accentColor));
   }
 
-  _buildActionWidget(NodeUi node) {
+  _buildActionWidget(AppUi node) {
     switch (node.status) {
       case "running":
         return IconButton(
@@ -205,12 +205,16 @@ class _NodeTableState extends State<NodeTable> {
                 )),
           );
         } else {
-          return IconButton(
-              onPressed: () => widget.runApp(node),
-              icon: const Icon(
-                Icons.play_arrow,
-                color: CustomColors.accentColor,
-              ));
+          return Tooltip(
+            message:
+                "run with \nnode: ${node.nodeVersion}\nscript: ${node.defaultScript}",
+            child: IconButton(
+                onPressed: () => widget.runApp(node),
+                icon: const Icon(
+                  Icons.play_arrow,
+                  color: CustomColors.accentColor,
+                )),
+          );
         }
     }
   }

@@ -1,5 +1,5 @@
 import 'package:desktop/di/di.dart';
-import 'package:desktop/pb/nodes.pb.dart';
+import 'package:desktop/pb/api.pb.dart';
 import 'package:flutter/material.dart';
 
 enum Stage { PRE, IN_PROGRESS, DONE }
