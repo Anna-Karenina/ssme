@@ -89,7 +89,7 @@ class App extends $pb.GeneratedMessage {
     ..aOS(3, _omitFieldNames ? '' : 'name')
     ..pPS(4, _omitFieldNames ? '' : 'scripts')
     ..aOS(5, _omitFieldNames ? '' : 'nodeVersion', protoName: 'nodeVersion')
-    ..aOS(6, _omitFieldNames ? '' : 'defaultScript')
+    ..aOS(6, _omitFieldNames ? '' : 'defaultScript', protoName: 'defaultScript')
     ..aOB(7, _omitFieldNames ? '' : 'isAppValid', protoName: 'isAppValid')
     ..hasRequiredFields = false
   ;

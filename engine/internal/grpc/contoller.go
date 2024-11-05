@@ -123,7 +123,8 @@ func (s *serverAPI) RunApp(ctx context.Context, in *apiv1.RunAppRequest) (*apiv1
 func (s *serverAPI) StopApp(ctx context.Context, in *apiv1.StopAppRequest) (*apiv1.AppRunTime, error) {
 	app, err := s.apps.StopApp(ctx, int(in.Id))
 	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to stop")
+		fmt.Println("failed to stop")
+		return nil, status.Error(codes.NotFound, "failed to stop")
 	}
 
 	return &apiv1.AppRunTime{

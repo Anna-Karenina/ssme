@@ -31,7 +31,7 @@ const App$json = {
     {'1': 'name', '3': 3, '4': 1, '5': 9, '10': 'name'},
     {'1': 'scripts', '3': 4, '4': 3, '5': 9, '10': 'scripts'},
     {'1': 'nodeVersion', '3': 5, '4': 1, '5': 9, '10': 'nodeVersion'},
-    {'1': 'default_script', '3': 6, '4': 1, '5': 9, '10': 'defaultScript'},
+    {'1': 'defaultScript', '3': 6, '4': 1, '5': 9, '10': 'defaultScript'},
     {'1': 'isAppValid', '3': 7, '4': 1, '5': 8, '10': 'isAppValid'},
   ],
 };
@@ -40,8 +40,8 @@ const App$json = {
 final $typed_data.Uint8List appDescriptor = $convert.base64Decode(
     'CgNBcHASDgoCaWQYASABKAVSAmlkEhIKBHBhdGgYAiABKAlSBHBhdGgSEgoEbmFtZRgDIAEoCV'
     'IEbmFtZRIYCgdzY3JpcHRzGAQgAygJUgdzY3JpcHRzEiAKC25vZGVWZXJzaW9uGAUgASgJUgtu'
-    'b2RlVmVyc2lvbhIlCg5kZWZhdWx0X3NjcmlwdBgGIAEoCVINZGVmYXVsdFNjcmlwdBIeCgppc0'
-    'FwcFZhbGlkGAcgASgIUgppc0FwcFZhbGlk');
+    'b2RlVmVyc2lvbhIkCg1kZWZhdWx0U2NyaXB0GAYgASgJUg1kZWZhdWx0U2NyaXB0Eh4KCmlzQX'
+    'BwVmFsaWQYByABKAhSCmlzQXBwVmFsaWQ=');
 
 @$core.Deprecated('Use requestVersionDescriptor instead')
 const RequestVersion$json = {

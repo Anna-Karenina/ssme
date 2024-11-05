@@ -20,6 +20,7 @@ dependencies:
   flutter_expandable_table: ^2.0.1
   collection: ^1.18.0
   reactive_forms: ^17.0.1
+  file_selector: ^1.0.3
 
 dev_dependencies:
   flutter_test:

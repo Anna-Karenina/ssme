@@ -3,10 +3,12 @@ import 'package:desktop/dal/models/app_ui.dart';
 import 'package:desktop/di/di.dart';
 import 'package:desktop/pb/api.pb.dart';
 import 'package:desktop/presentations/components/apps_table.dart';
+import 'package:desktop/presentations/components/snackbar.dart';
 import 'package:desktop/utils/colors.dart';
 import 'package:desktop/utils/inc_key.dart';
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
+import 'package:grpc/grpc.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -328,8 +330,8 @@ class _DashboardState extends State<Dashboard> {
         nodes = newNodes;
         _tableKey = incKey(_tableKey);
       });
-    } catch (e) {
-      print(e.toString());
+    } on GrpcError catch (e) {
+      showToast(context, e.codeName, e?.message ?? "");
     }
   }
 

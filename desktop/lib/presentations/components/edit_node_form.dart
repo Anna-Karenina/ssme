@@ -1,5 +1,6 @@
 import 'package:desktop/dal/models/app_ui.dart';
 import 'package:desktop/utils/colors.dart';
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart' hide ProgressIndicator;
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -32,7 +33,7 @@ import 'package:reactive_forms/reactive_forms.dart';
 
 // ignore: must_be_immutable
 class EditNodeForm extends StatefulWidget {
-  Function onSubmit;
+  Function(String, String) onSubmit;
   AppUi? selectedNode;
 
   EditNodeForm({this.selectedNode, required this.onSubmit, super.key});
@@ -113,14 +114,26 @@ class _EditNodeFormState extends State<EditNodeForm> {
                         'The Path must be at least 8 characters',
                   },
                   textInputAction: TextInputAction.done,
-                  decoration: const InputDecoration(
-                    focusedBorder: OutlineInputBorder(
+                  decoration: InputDecoration(
+                    focusedBorder: const OutlineInputBorder(
                         borderSide: BorderSide(color: CustomColors.accentBlue)),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 12),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                     labelText: 'Path',
+                    suffixIcon: Visibility(
+                      visible: form.value['path'].toString().isEmpty,
+                      replacement: IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () => _clearPath(form)),
+                      child: IconButton(
+                          onPressed: () => _selectDir(form),
+                          icon: const Icon(
+                            Icons.folder,
+                            color: Colors.white,
+                          )),
+                    ),
                     helperText: '',
-                    helperStyle: TextStyle(height: 0.7),
-                    errorStyle: TextStyle(height: 0.7),
+                    helperStyle: const TextStyle(height: 0.7),
+                    errorStyle: const TextStyle(height: 0.7),
                   ),
                   style: const TextStyle(
                       fontSize: 11, fontWeight: FontWeight.w400),
@@ -140,8 +153,9 @@ class _EditNodeFormState extends State<EditNodeForm> {
 
   void syncInit() {}
 
-  void _onUpdate(form) {
+  Future<void> _onUpdate(form) async {
     if (form.valid) {
+      await widget.onSubmit(form.value['name'], form.value['path']);
       form.resetState(
         {
           'name': ControlState<String>(value: ''),
@@ -149,9 +163,22 @@ class _EditNodeFormState extends State<EditNodeForm> {
         },
         removeFocus: true,
       );
-      widget.onSubmit(form.value['name'], form.value['path']);
     } else {
       form.markAllAsTouched();
     }
+  }
+
+  Future<void> _selectDir(FormGroup form) async {
+    final String? directoryPath = await getDirectoryPath();
+    if (directoryPath == null) {
+      print("Operation was canceled by the user.");
+      return;
+    }
+    form.updateValue(
+        {'path': directoryPath, 'name': form.control('name').value.toString()});
+  }
+
+  _clearPath(FormGroup form) {
+    form.updateValue({'path': ""});
   }
 }

@@ -1,4 +1,5 @@
 PROJECT_NAME=ssme-engine
+PROJECT_ROOT_DIR=/Users/vladislav.sokolov/develop/github.com/Anna-Karenina/ssme
 
 LOCAL_BIN=$(CURDIR)/bin
 
@@ -17,7 +18,7 @@ build:
 
 .PHONY: generate
 generate:
-	protoc -I ~/develop/self/ssme/proto  api.proto --go_out=./pkg/gen/ --go_opt=paths=source_relative --go-grpc_out=./pkg/gen/ --go-grpc_opt=paths=source_relative
+	protoc -I $(PROJECT_ROOT_DIR)/proto  api.proto --go_out=./pkg/gen/ --go_opt=paths=source_relative --go-grpc_out=./pkg/gen/ --go-grpc_opt=paths=source_relative
 
 .PHONY: create_db
 create_db:

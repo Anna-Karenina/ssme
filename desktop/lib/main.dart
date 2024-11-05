@@ -44,6 +44,8 @@ class _Rs25AppState extends State<Rs25App> {
       builder: null,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+          snackBarTheme:
+              const SnackBarThemeData(backgroundColor: Colors.redAccent),
           useMaterial3: true,
           chipTheme: ChipThemeData(
             showCheckmark: false,

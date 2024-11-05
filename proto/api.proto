@@ -34,7 +34,7 @@ message App {
   string name             = 3;
   repeated string scripts = 4;
   string nodeVersion      = 5;
-  string default_script   = 6;
+  string defaultScript    = 6;
   bool isAppValid         = 7;
 }
 

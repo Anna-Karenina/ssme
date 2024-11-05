@@ -7,9 +7,13 @@ import (
 
 	appsruntime "github.com/Anna-Karenina/sme-engine/internal/app/apps_runtime"
 	"github.com/Anna-Karenina/sme-engine/internal/domain/models"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const op = "apps.service"
+const DefaultNodeJsVersion = "v20.14.0"
 
 type Apps struct {
 	log        *slog.Logger
@@ -52,6 +56,13 @@ func (n *Apps) CreateApp(ctx context.Context, path string, name string) (*models
 	log := n.log.With(slog.String("op", op), slog.String(".path", path), slog.String(".name", name))
 	log.Info("creating new node")
 
+	if len(path) == 0 {
+		return &models.Node{}, status.Errorf(
+			codes.InvalidArgument,
+			fmt.Sprintf("Field path didn't provided"),
+		)
+	}
+
 	node, err := n.appCRUD.Create(ctx, path, name)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
@@ -71,7 +82,7 @@ func (n *Apps) CreateApp(ctx context.Context, path string, name string) (*models
 
 		defaultNodeJsVersion, err := n.envService.ParseProjectNodeJsVersionFile(path)
 		if err != nil {
-			defaultNodeJsVersion = "v20.14.0"
+			defaultNodeJsVersion = DefaultNodeJsVersion
 		}
 
 		node.NodeJsVersion = defaultNodeJsVersion
