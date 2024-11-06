@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"slices"
+	"strconv"
 	"strings"
 	"syscall"
 
@@ -41,17 +42,21 @@ func (a *AppsRunTimeService) StopApp(ctx context.Context, id int) (*appsruntime.
 
 	node, err := a.repository.InternalGetNodeById(ctx, id)
 	if err != nil {
-		log.Info("some err here1: %v", err)
+		log.Info("some err here: %v", err)
+		return nil, serviceerrors.ErrCantStopProcess
 	}
 
 	pid := a.runTimeStorage.Apps[id].Pid
-	log.Info(fmt.Sprint(pid))
-	proc, err := os.FindProcess(pid)
+	spid := fmt.Sprint(pid)
+	log.Info(spid)
+
+	err = killRecurse(spid)
 	if err != nil {
-		log.Info("cmd.Process.Stop failed: ", err)
+		log.Debug("Command finished with error: %v", err)
+		return nil, serviceerrors.ErrCantStopProcess
 	}
 
-	proc.Signal(syscall.SIGTERM)
+	delete(a.runTimeStorage.Apps, id)
 
 	return &appsruntime.AppRuntime{
 		Id:     id,
@@ -63,6 +68,16 @@ func (a *AppsRunTimeService) StopApp(ctx context.Context, id int) (*appsruntime.
 		Ports:  make([]int32, 0),
 		Branch: getGitBranch(node.Path),
 	}, nil
+
+	// prev
+	// proc, err := os.FindProcess(pid)
+	// if err != nil {
+	// 	log.Info("cmd.Process.Find failed: ", err)
+	// 	return nil, serviceerrors.ErrCantStopProcess
+	// }
+
+	// err = proc.Signal(syscall.SIGTERM)
+
 }
 
 func (a *AppsRunTimeService) RunApp(ctx context.Context, payload *appsruntime.RunAppPayload) (*appsruntime.AppRuntime, error) {
@@ -82,7 +97,8 @@ func (a *AppsRunTimeService) RunApp(ctx context.Context, payload *appsruntime.Ru
 	command := fmt.Sprintf("fnm exec --using=%s npm run --prefix %s %s", payload.NodeVersion, node.Path, payload.Command)
 	parts := strings.Split(command, " ")
 
-	l, err := os.Create(fmt.Sprintf("%s.log", node.Name)) //rewrite
+	//TODO: rewrite logfile
+	l, err := os.Create(fmt.Sprintf("%s.log", node.Name))
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, serviceerrors.ErrInNodeRuntime)
 
@@ -97,10 +113,10 @@ func (a *AppsRunTimeService) RunApp(ctx context.Context, payload *appsruntime.Ru
 
 	branch := getGitBranch(node.Path)
 
-	go func() {
-		err = cmd.Wait()
-		fmt.Printf("Command finished with error: %v", err)
-	}()
+	// go func() {
+	// 	err = cmd.Wait()
+	// 	fmt.Printf("Command finished with error: %v", err)
+	// }()
 
 	app := &appsruntime.AppRuntime{
 		Pid:    cmd.Process.Pid,
@@ -134,4 +150,33 @@ func getGitBranch(path string) string {
 		branch = scanner.Text()
 	}
 	return branch
+}
+
+func killRecurse(ppid string) error {
+	if ppid == "" {
+		return nil
+	}
+
+	// Get child process PIDs
+	cmd := exec.Command("pgrep", "-P", ppid)
+	output, err := cmd.Output()
+	if err != nil {
+		msg := fmt.Sprintf("%s", err)
+		if msg == "exit status 1" {
+			fmt.Println("stack is empty")
+			return nil
+		} else {
+			return err
+		}
+	}
+	cpids := strings.Fields(string(output))
+
+	for _, cpid := range cpids {
+		killRecurse(cpid)
+	}
+
+	fmt.Printf("killing %s\n", ppid)
+	pid, _ := strconv.Atoi(ppid)
+	syscall.Kill(pid, syscall.SIGKILL)
+	return nil
 }
