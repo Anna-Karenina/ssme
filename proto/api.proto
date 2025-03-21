@@ -18,12 +18,16 @@ service Apps {
   rpc UpdateDefaultRunScript(UpdateDefaultRunScriptParams) returns (App);
 }
 
+service Runners {
+  rpc GetAllNodeJsVersions(GetAllNodeJsVersionsParams) returns (NodeJsVersionsInfo);
+}
 
 service Environment{ 
   rpc ProcessStream(DataRequest) returns (stream ProcessInfo);
-  rpc GetNodejsInfo(EmptyParams) returns (NodejsVersionsInfo);
+  // rpc GetNodejsInfo(EmptyParams) returns (NodejsVersionsInfo);
   rpc UpdateDefaultNodejsVersion(UpdateDefaultNodejsVersionParams) returns (StatusResponse);
   rpc DownloadNodeJsVersion(RequestVersion) returns (stream DownloadStatusResponse);
+  rpc RunProjectInCode(AppIdPayload) returns(EmptyParams);
 }
 
 message EmptyParams {}
@@ -107,10 +111,6 @@ message ProcessInfo {
   repeated AppRunTime apps         = 2;
 }
 
-message NodejsVersionsInfo { 
-  repeated string installed = 1;
-  repeated string remoteLts = 2;
-}
 message UpdateDefaultRunScriptParams {
     string script = 1;
     int32 id      = 2;
@@ -118,4 +118,19 @@ message UpdateDefaultRunScriptParams {
 
 message DownloadStatusResponse {
   string status = 1;
+}
+
+message GetAllNodeJsVersionsParams{
+  bool lts_only = 1;
+  bool latest_only = 2;
+}
+
+message NodeJsVersionInfo{
+ bool lts = 1;
+ bool installed = 2;
+ string version = 3;
+}
+
+message NodeJsVersionsInfo{
+  repeated NodeJsVersionInfo nodeJsInfo = 1;
 }

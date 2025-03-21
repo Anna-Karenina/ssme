@@ -7,6 +7,13 @@ pub struct EnvironmentImpl;
 
 #[tonic::async_trait]
 impl api::environment_server::Environment for EnvironmentImpl {
+    async fn run_project_in_code(
+        &self,
+        _request: tonic::Request<api::AppIdPayload>,
+    ) -> Result<tonic::Response<api::EmptyParams>, Status> {
+        // Implement the logic for handling the request here
+        Ok(tonic::Response::new(api::EmptyParams::default()))
+    }
     type ProcessStreamStream =
         tokio_stream::wrappers::ReceiverStream<Result<api::ProcessInfo, Status>>;
 
@@ -17,13 +24,6 @@ impl api::environment_server::Environment for EnvironmentImpl {
         let (_, rx) = tokio::sync::mpsc::channel(4);
         let stream = tokio_stream::wrappers::ReceiverStream::new(rx);
         Ok(tonic::Response::new(stream))
-    }
-
-    async fn get_nodejs_info(
-        &self,
-        _request: tonic::Request<api::EmptyParams>,
-    ) -> Result<tonic::Response<api::NodejsVersionsInfo>, Status> {
-        Ok(tonic::Response::new(api::NodejsVersionsInfo::default()))
     }
 
     async fn update_default_nodejs_version(

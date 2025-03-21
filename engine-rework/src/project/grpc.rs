@@ -1,6 +1,6 @@
 use tonic::{Request, Response, Status};
 
-use crate::{api, storage::DbPool};
+use crate::{api, persistence::storage::DbPool};
 
 use super::models::NewProject;
 use super::repository::{

@@ -1,6 +1,13 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
+    intalled_nodes (id) {
+        id -> Integer,
+        version -> Text,
+    }
+}
+
+diesel::table! {
     projects (id) {
         id -> Integer,
         name -> Text,
@@ -12,3 +19,8 @@ diesel::table! {
         created_at -> Timestamp,
     }
 }
+
+diesel::allow_tables_to_appear_in_same_query!(
+    intalled_nodes,
+    projects,
+);

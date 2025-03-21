@@ -2,7 +2,14 @@ use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use crate::schema::projects;
+use crate::persistence::schema::projects;
+
+#[allow(dead_code)]
+pub enum ProjectRuntime {
+    Node,
+    Deno,
+    Bun,
+}
 
 #[derive(Queryable, PartialEq, Serialize, Deserialize, AsChangeset)]
 pub struct Project {

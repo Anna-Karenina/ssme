@@ -1,8 +1,7 @@
-use diesel::associations::HasTable;
 use diesel::prelude::*;
 
+use crate::persistence::schema::projects::dsl::*;
 use crate::project::models::{NewProject, Project};
-use crate::schema::projects::dsl::*;
 
 pub fn create_project(
     conn: &mut SqliteConnection,
