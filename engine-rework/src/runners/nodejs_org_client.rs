@@ -1,4 +1,4 @@
-use crate::runners::utils::deserialize_lts;
+use crate::runners::utils::{deserialize_empty_as_none, deserialize_lts};
 use crate::{api::DownloadStatusResponse, common::arch::Arch};
 
 use async_compression::tokio::bufread::GzipDecoder;
@@ -23,8 +23,7 @@ pub struct Node {
     #[serde(skip_deserializing)]
     pub date: String,
     files: Vec<String>,
-    // #[serde(deserialize_with = "deserialize_empty_as_none")]
-    #[serde(skip_deserializing)]
+    #[serde(deserialize_with = "deserialize_empty_as_none")]
     npm: Option<String>,
     #[serde(skip_deserializing)]
     v8: String,

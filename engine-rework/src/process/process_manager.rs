@@ -54,16 +54,11 @@ impl ProcessManager {
         let mut processes = self.processes.lock().await;
 
         if let Some(mut process) = processes.remove(&id) {
-            // Работаем с ссылкой на child, а не берем его методом take()
             let child = &mut process.child;
-
-            println!("Останавливаем процесс с ID: {}", id);
             child.kill().await?; // Завершаем процесс
             let _ = child.wait().await; // Дожидаемся завершения
-
-        // TODO : Если есть активный таск на чтение stdout/stderr, отменяем его
         } else {
-            println!("Процесс с ID {} не найден", id);
+            return Err("Process not found".into());
         }
 
         Ok(())
@@ -97,7 +92,7 @@ impl ProcessManager {
                 return Err("Process not found".to_string());
             }
         };
-
+        let child = &mut process.child;
         // Используем ссылки, чтобы не "забирать" stdout и stderr из ProcessInfo
         let stdout = process.stdout.as_mut().ok_or("No stdout")?;
         let stderr = process.stderr.as_mut().ok_or("No stderr")?;
@@ -121,8 +116,14 @@ impl ProcessManager {
                         }
                     }
                 }
-                _ = process.child.wait() => {
+                _ = child.wait() => {
                     break; // Процесс завершился
+                }
+                else => {
+                    // Проверяем, жив ли процесс
+                    if let Ok(Some(_status)) = child.try_wait() {
+                        break; // Если процесс завершился
+                    }
                 }
             }
         }
@@ -166,11 +167,10 @@ impl ProcessManager {
                         let ram_usage = proc_info.memory(); // Получаем использование RAM
 
                         let resource_usage = ResourceUsage {
-                            time:"None".to_string(),
-                            // time: Some(prost_types::Timestamp {
-                            //     seconds: last_checked.elapsed().as_secs() as i64,
-                            //     nanos: last_checked.elapsed().subsec_nanos() as i32,
-                            // }),
+                            time_stamp:  Some(prost_types::Timestamp {
+                                    seconds: last_checked.elapsed().as_secs() as i64,
+                                    nanos: last_checked.elapsed().subsec_nanos() as i32,
+                                }),
                             cpu: cpu_usage as f32,
                             mem: ram_usage as f32,
                         };
