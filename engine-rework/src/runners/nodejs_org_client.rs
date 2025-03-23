@@ -8,9 +8,10 @@ use async_tar::Archive;
 use reqwest::{Client, Response, Url};
 use serde::Deserialize;
 use std::collections::HashMap;
+use std::sync::Arc;
 use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
-use tokio::sync::{mpsc, watch};
+use tokio::sync::{Mutex, mpsc, watch};
 use tokio_util::compat::TokioAsyncReadCompatExt;
 use tokio_util::io::ReaderStream;
 use tonic::Status;
@@ -42,7 +43,7 @@ pub struct Node {
 
 pub struct NodeJsOrgClient {
     base_url: Url,
-    abort_sender: watch::Sender<bool>,
+    abort_sender: Arc<Mutex<watch::Sender<bool>>>,
 }
 
 impl NodeJsOrgClient {
@@ -50,7 +51,7 @@ impl NodeJsOrgClient {
         let (abort_sender, _) = watch::channel(false);
         Self {
             base_url: Url::parse("https://nodejs.org/dist").unwrap(),
-            abort_sender,
+            abort_sender: Arc::new(Mutex::new(abort_sender)),
         }
     }
 
@@ -81,7 +82,7 @@ impl NodeJsOrgClient {
         let url = format!("/{}/{}", version, file_name);
         let save_path = format!("/tmp/{}", file_name);
         let extract_path = format!("/tmp/{}", version);
-        let abort_rx = self.get_abort_receiver(); // uses for thread safe abort downloading
+        let abort_rx = self.get_abort_receiver().await; // uses for thread safe abort downloading
 
         if tx
             .send(Ok(DownloadStatusResponse {
@@ -135,7 +136,7 @@ impl NodeJsOrgClient {
         url: &str,
         file_path: &str,
         tx: &mpsc::Sender<Result<DownloadStatusResponse, Status>>,
-        mut abort_rx: watch::Receiver<bool>,
+        abort_rx: watch::Receiver<bool>,
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let response = self.get(url).await?.error_for_status()?;
         let total_size = response
@@ -172,8 +173,9 @@ impl NodeJsOrgClient {
         Ok(())
     }
 
-    pub fn cancel_download(&self) {
-        let _ = self.abort_sender.send(true);
+    pub async fn cancel_download(&self) {
+        let abort_sender = self.abort_sender.lock().await;
+        let _ = abort_sender.send(true);
     }
 
     async fn extract_tar_gz(
@@ -222,8 +224,8 @@ impl NodeJsOrgClient {
         Ok(response)
     }
 
-    fn get_abort_receiver(&self) -> watch::Receiver<bool> {
-        self.abort_sender.subscribe()
+    async fn get_abort_receiver(&self) -> watch::Receiver<bool> {
+        self.abort_sender.lock().await.subscribe()
     }
 
     fn filter_latest_versions(versions: Vec<Node>) -> Vec<Node> {

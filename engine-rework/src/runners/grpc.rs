@@ -85,7 +85,7 @@ impl api::runners_server::Runners for RunnersImpl {
         &self,
         _request: Request<api::EmptyParams>,
     ) -> Result<Response<api::EmptyParams>, Status> {
-        self.node_js_org_client.cancel_download();
+        self.node_js_org_client.cancel_download().await;
         Ok(Response::new(api::EmptyParams {}))
     }
 }
