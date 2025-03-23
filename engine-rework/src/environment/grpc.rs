@@ -1,35 +1,102 @@
-use tonic::Status;
+use std::process::Command;
+use tokio::sync::mpsc;
+use tokio_stream::wrappers::ReceiverStream;
+use tonic::{Request, Response, Status};
 
-use crate::api;
+use crate::{
+    api, persistence::storage::DbPool, process::process_manager::ProcessManager,
+    project::repository::get_project,
+};
 
-#[derive(Default)]
-pub struct EnvironmentImpl;
+pub struct EnvironmentImpl {
+    pub process_manager: std::sync::Arc<ProcessManager>,
+    pub db_pool: std::sync::Arc<DbPool>,
+}
 
 #[tonic::async_trait]
 impl api::environment_server::Environment for EnvironmentImpl {
+    type ReadProcessLogsStream =
+        tokio_stream::wrappers::ReceiverStream<Result<api::ProcessLogsByLine, Status>>;
+
+    type ReadProcessResourcesStream =
+        tokio_stream::wrappers::ReceiverStream<Result<api::ResourceUsage, Status>>;
+
     async fn run_project_in_code(
         &self,
-        _request: tonic::Request<api::AppIdPayload>,
+        request: tonic::Request<api::AppIdPayload>,
     ) -> Result<tonic::Response<api::EmptyParams>, Status> {
-        // Implement the logic for handling the request here
+        let conn = &mut self
+            .db_pool
+            .get()
+            .map_err(|_| Status::internal("Failed to get DB connection"))?;
+        let req = request.into_inner();
+
+        let project = get_project(conn, req.id)
+            .map_err(|e| Status::not_found(format!("grpc error: {}", e)))?;
+
+        #[cfg(target_os = "windows")]
+        {
+            Command::new("code")
+                .arg(&project.path)
+                .spawn()
+                .map_err(|_| Status::internal("Failed to start VS Code"))?;
+        }
+
+        #[cfg(target_family = "unix")]
+        {
+            Command::new("code")
+                .arg(&project.path)
+                .stdin(std::process::Stdio::null())
+                .stdout(std::process::Stdio::null())
+                .stderr(std::process::Stdio::null())
+                .spawn()
+                .map_err(|_| Status::internal("Failed to start VS Code"))?;
+        }
+
         Ok(tonic::Response::new(api::EmptyParams::default()))
     }
-    type ProcessStreamStream =
-        tokio_stream::wrappers::ReceiverStream<Result<api::ProcessInfo, Status>>;
 
-    async fn process_stream(
+    async fn read_process_resources(
         &self,
-        _request: tonic::Request<api::DataRequest>,
-    ) -> Result<tonic::Response<Self::ProcessStreamStream>, Status> {
-        let (_, rx) = tokio::sync::mpsc::channel(4);
-        let stream = tokio_stream::wrappers::ReceiverStream::new(rx);
-        Ok(tonic::Response::new(stream))
+        request: Request<api::AppIdPayload>,
+    ) -> Result<Response<Self::ReadProcessResourcesStream>, Status> {
+        let req = request.into_inner();
+        let (tx, rx) = mpsc::channel(10);
+        let process_manager = self.process_manager.clone();
+
+        tokio::spawn(async move {
+            if let Err(e) = process_manager.stream_resource_usage(req.id, tx).await {
+                eprintln!("Error in stream_resource_usage: {:?}", e);
+            }
+        });
+
+        Ok(Response::new(ReceiverStream::new(rx)))
     }
 
-    async fn update_default_nodejs_version(
+    async fn read_process_logs(
         &self,
-        _request: tonic::Request<api::UpdateDefaultNodejsVersionParams>,
-    ) -> Result<tonic::Response<api::StatusResponse>, Status> {
-        Ok(tonic::Response::new(api::StatusResponse::default()))
+        request: Request<api::AppIdPayload>,
+    ) -> Result<Response<Self::ReadProcessLogsStream>, Status> {
+        let req = request.into_inner();
+        let (tx, rx) = mpsc::channel(10);
+        let process_manager = self.process_manager.clone();
+
+        tokio::spawn(async move {
+            if let Err(e) = process_manager.stream_output(req.id, tx).await {
+                eprintln!("Ошибка в stream_output: {:?}", e);
+            }
+        });
+
+        Ok(Response::new(ReceiverStream::new(rx)))
+    }
+
+    async fn processes_list(
+        &self,
+        _request: Request<api::EmptyParams>,
+    ) -> Result<Response<api::ProcessesListInfoResponse>, tonic::Status> {
+        let processes = self.process_manager.list_processes().await;
+        Ok(Response::new(api::ProcessesListInfoResponse {
+            list: processes,
+        }))
     }
 }

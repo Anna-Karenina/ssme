@@ -6,14 +6,14 @@ option go_package = "github.com/Anna-Karenina/sme-engine;apiv1";
 
 
 service Apps {
-  rpc CreateApp (CreateAppPayload) returns (App);
+  rpc CreateApp (CreateAppPayload) returns (App); 
   rpc ReadApp (AppIdPayload) returns (App);
   rpc UpdateApp (CreateAppPayload) returns (App);
   rpc RemoveApp (AppIdPayload) returns (AppIdPayload);
   rpc ReadAllApps (EmptyParams) returns (AppList);
 
   rpc RunApp(RunAppRequest) returns (AppRunTime);
-  rpc StopApp(StopAppRequest) returns (AppRunTime);
+  rpc StopApp(AppIdPayload) returns (AppRunTime);
   rpc SyncAppScripts(AppIdPayload) returns(App);
   rpc UpdateDefaultRunScript(UpdateDefaultRunScriptParams) returns (App);
 }
@@ -25,10 +25,15 @@ service Runners {
 }
 
 service Environment{ 
-  rpc ProcessStream(DataRequest) returns (stream ProcessInfo);
-  // rpc GetNodejsInfo(EmptyParams) returns (NodejsVersionsInfo);
-  rpc UpdateDefaultNodejsVersion(UpdateDefaultNodejsVersionParams) returns (StatusResponse);
-  rpc RunProjectInCode(AppIdPayload) returns(EmptyParams);
+  rpc ReadProcessLogs(AppIdPayload) returns (stream ProcessLogsByLine);
+  rpc ReadProcessResources(AppIdPayload) returns (stream ResourceUsage);
+  rpc RunProjectInCode(AppIdPayload) returns (EmptyParams);
+  rpc ProcessesList(EmptyParams) returns (ProcessesListInfoResponse);
+
+  //old
+    //rpc ProcessStream(AppIdPayload) returns (stream ProcessInfo);
+    // rpc GetNodejsInfo(EmptyParams) returns (NodejsVersionsInfo);
+    // rpc UpdateDefaultNodejsVersion(UpdateDefaultNodejsVersionParams) returns (StatusResponse);
 }
 
 message EmptyParams {}
@@ -63,6 +68,10 @@ message CreateAppPayload {
   string name = 2;
 }
 
+message ProcessLogsByLine { 
+  string line = 1;
+}
+
 message AppIdPayload { 
   int32 id = 1;
 }
@@ -75,9 +84,7 @@ message StatusResponse {
   string status = 1;
 }
 
-message StopAppRequest  {
-  int32 id = 1;
-}
+
 
 message RunAppRequest {
   int32 id           = 1;
@@ -96,10 +103,6 @@ message AppRunTime {
 	string branch           = 8;
 }
 
-
-message DataRequest { 
-  string id = 1;
-}
 
 message TotalEnviromentUsage { 
   string cpu     = 1;
@@ -134,4 +137,20 @@ message NodeJsVersionInfo{
 
 message NodeJsVersionsInfo{
   repeated NodeJsVersionInfo nodeJsInfo = 1;
+}
+
+
+message ResourceUsage {
+  string time = 1;
+  float cpu = 2;  
+  float mem = 3;  
+}
+
+message ProcessesListInfoResponse{ 
+  repeated ProcessesListInfo list = 1; 
+}
+
+message ProcessesListInfo{
+  int32 id = 1;
+  int32 pid = 2;
 }

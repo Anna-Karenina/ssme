@@ -8,8 +8,9 @@ use async_tar::Archive;
 use reqwest::{Client, Response, Url};
 use serde::Deserialize;
 use std::collections::HashMap;
+use std::path::Path;
 use std::sync::Arc;
-use tokio::fs::File;
+use tokio::fs::{self, File};
 use tokio::io::AsyncWriteExt;
 use tokio::sync::{Mutex, mpsc, watch};
 use tokio_util::compat::TokioAsyncReadCompatExt;
@@ -80,21 +81,12 @@ impl NodeJsOrgClient {
     ) {
         let file_name = NodeJsOrgClient::filename_for_version(version.to_owned(), "tar.gz");
         let url = format!("/{}/{}", version, file_name);
-        let save_path = format!("/tmp/{}", file_name);
-        let extract_path = format!("/tmp/{}", version);
+        let base_source_path = "/tmp/ssme/nodes";
+        let temp_path = format!("/tmp/ssme/{}", file_name);
+        let source_path = format!("{}/{}", base_source_path, version);
         let abort_rx = self.get_abort_receiver().await; // uses for thread safe abort downloading
 
-        if tx
-            .send(Ok(DownloadStatusResponse {
-                status: format!("Starting dowload: {}", url),
-            }))
-            .await
-            .is_err()
-        {
-            return;
-        };
-
-        if let Err(e) = self.download_file(&url, &save_path, &tx, abort_rx).await {
+        if let Err(e) = NodeJsOrgClient::ensure_directory_exists(&base_source_path).await {
             let _ = tx
                 .send(Err(tonic::Status::internal(format!(
                     "Download failed: {}",
@@ -106,7 +98,7 @@ impl NodeJsOrgClient {
 
         if tx
             .send(Ok(DownloadStatusResponse {
-                status: "Download completed, starting unpack".to_string(),
+                status: format!("Starting dowload: {}", url),
             }))
             .await
             .is_err()
@@ -114,12 +106,36 @@ impl NodeJsOrgClient {
             return;
         };
 
-        if let Err(e) = self.extract_tar_gz(&save_path, &extract_path).await {
+        if let Err(e) = self.download_file(&url, &temp_path, &tx, abort_rx).await {
             let _ = tx
                 .send(Err(tonic::Status::internal(format!(
-                    "Unpack failed: {}",
+                    "Download failed: {}",
                     e
                 ))))
+                .await;
+            return;
+        };
+
+        if tx
+            .send(Ok(DownloadStatusResponse {
+                status: format!("Download completed, into: {} starting unpack", &temp_path),
+            }))
+            .await
+            .is_err()
+        {
+            return;
+        };
+
+        if let Err(e) = NodeJsOrgClient::extract_tar_gz(&temp_path, &source_path).await {
+            let _ = tx
+                .send(Err(Status::internal(format!("Unpack failed: {}", e))))
+                .await;
+            return;
+        }
+
+        if let Err(e) = self.delete_archive(&temp_path).await {
+            let _ = tx
+                .send(Err(Status::internal(format!("Clean up failed: {}", e))))
                 .await;
             return;
         }
@@ -179,16 +195,81 @@ impl NodeJsOrgClient {
     }
 
     async fn extract_tar_gz(
-        &self,
         file_path: &str,
         extract_path: &str,
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        let file = File::open(file_path).await?;
+        let file = File::open(file_path).await.map_err(|e| {
+            eprintln!("Failed to open file {}: {}", file_path, e);
+            e
+        })?;
+
+        let tar_file_name = Path::new(file_path).file_name().ok_or_else(|| {
+            let err = format!("Failed to extract file name from path: {}", file_path);
+            eprintln!("{}", err);
+            err
+        })?;
+
         let reader = ReaderStream::new(file);
         let stream_reader = tokio_util::io::StreamReader::new(reader);
+
         let decoder = GzipDecoder::new(stream_reader);
         let archive = Archive::new(decoder.compat());
-        archive.unpack(extract_path).await?;
+
+        let extract_path_as_path = Path::new(extract_path);
+
+        let version_dir_name = extract_path_as_path
+            .file_name()
+            .ok_or_else(|| {
+                let err = format!(
+                    "Failed to extract version directory name from path: {}",
+                    extract_path
+                );
+                eprintln!("{}", err);
+                err
+            })?
+            .to_str()
+            .ok_or_else(|| {
+                let err = format!(
+                    "Failed to convert version directory name to string: {}",
+                    extract_path
+                );
+                eprintln!("{}", err);
+                err
+            })?;
+
+        if let Some(parent) = extract_path_as_path.parent() {
+            archive.unpack(parent).await.map_err(|e| {
+                eprintln!("Failed to unpack archive into {}: {}", parent.display(), e);
+                e
+            })?;
+
+            let extracted_dir = format!(
+                "{}/{}",
+                parent.display(),
+                tar_file_name
+                    .to_string_lossy()
+                    .strip_suffix(".tar.gz")
+                    .unwrap()
+                    .to_string()
+            );
+            let target_dir = format!("{}/{}", parent.display(), version_dir_name);
+
+            fs::rename(&extracted_dir, &target_dir).await.map_err(|e| {
+                eprintln!(
+                    "Failed to rename extracted directory from {} to {}: {}",
+                    extracted_dir, target_dir, e
+                );
+                e
+            })?;
+        } else {
+            let err = format!(
+                "Failed to determine parent directory for path: {}",
+                extract_path
+            );
+            eprintln!("{}", err);
+            return Err(err.into());
+        }
+
         Ok(())
     }
 
@@ -268,5 +349,25 @@ impl NodeJsOrgClient {
         });
 
         result
+    }
+
+    async fn ensure_directory_exists(
+        path: &str,
+    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+        let path = Path::new(path);
+        if !path.exists() {
+            fs::create_dir_all(path).await?;
+        }
+        Ok(())
+    }
+
+    async fn delete_archive(
+        &self,
+        archive_path: &str,
+    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+        if let Err(e) = tokio::fs::remove_file(archive_path).await {
+            eprintln!("Archive delete failure {}: {}", archive_path, e);
+        }
+        Ok(())
     }
 }

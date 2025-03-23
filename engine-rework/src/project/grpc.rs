@@ -1,5 +1,6 @@
 use tonic::{Request, Response, Status};
 
+use crate::process::process_manager::ProcessManager;
 use crate::{api, persistence::storage::DbPool};
 
 use super::models::NewProject;
@@ -10,6 +11,7 @@ use super::worker::{PackageJsonParser, ProjectWorker};
 
 pub struct AppsImpl {
     pub db_pool: std::sync::Arc<DbPool>,
+    pub process_manager: std::sync::Arc<ProcessManager>,
 }
 
 #[tonic::async_trait]
@@ -168,15 +170,49 @@ impl api::apps_server::Apps for AppsImpl {
 
     async fn run_app(
         &self,
-        _request: Request<api::RunAppRequest>,
+        request: Request<api::RunAppRequest>,
     ) -> Result<Response<api::AppRunTime>, Status> {
+        let conn = &mut self
+            .db_pool
+            .get()
+            .map_err(|_| Status::internal("Failed to acquire a database connection"))?;
+
+        let req = request.into_inner();
+        let project = get_project(conn, req.id)
+            .map_err(|e| Status::not_found(format!("grpc error: {}", e)))?;
+
+        let node_path = format!("/tmp/ssme/nodes/{}/bin/node", project.node_version.unwrap());
+        let js_file_path =
+            "/Users/annakarenina/develop/github.com/Anna-Karenina/ssme/engine-rework/test.js";
+
+        dbg!(&node_path);
+        dbg!(&js_file_path);
+        if let Err(err) = self
+            .process_manager
+            .start_process(project.id, &node_path, &[&js_file_path])
+            .await
+        {
+            return Err(Status::internal(format!(
+                "Failed to start process: {}",
+                err
+            )));
+        }
+
         Ok(Response::new(api::AppRunTime::default()))
     }
 
     async fn stop_app(
         &self,
-        _request: Request<api::StopAppRequest>,
+        request: Request<api::AppIdPayload>,
     ) -> Result<Response<api::AppRunTime>, Status> {
+        if let Err(err) = self
+            .process_manager
+            .stop_process(request.into_inner().id)
+            .await
+        {
+            return Err(Status::internal(format!("Failed to stop process: {}", err)));
+        };
+
         Ok(Response::new(api::AppRunTime::default()))
     }
 

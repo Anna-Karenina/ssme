@@ -11,6 +11,7 @@ use tonic::transport::Server;
 mod common;
 mod environment;
 mod persistence;
+mod process;
 mod project;
 mod runners;
 
@@ -22,10 +23,16 @@ pub mod api {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let addr = "[::1]:50051".parse()?;
     let db_pool = Arc::new(persistence::storage::establish_connection());
-    let enviroment_service = EnvironmentImpl::default();
+    let process_manager = Arc::new(process::process_manager::ProcessManager::new());
+
+    let enviroment_service = EnvironmentImpl {
+        process_manager: Arc::clone(&process_manager),
+        db_pool: Arc::clone(&db_pool),
+    };
     let node_js_info_service = RunnersImpl::new(Arc::clone(&db_pool));
     let apps_service = AppsImpl {
         db_pool: Arc::clone(&db_pool),
+        process_manager: Arc::clone(&process_manager),
     };
 
     Server::builder()
