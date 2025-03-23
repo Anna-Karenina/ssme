@@ -8,6 +8,7 @@ use runners::grpc::RunnersImpl;
 use std::sync::Arc;
 use tonic::transport::Server;
 
+mod common;
 mod environment;
 mod persistence;
 mod project;

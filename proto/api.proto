@@ -20,13 +20,14 @@ service Apps {
 
 service Runners {
   rpc GetAllNodeJsVersions(GetAllNodeJsVersionsParams) returns (NodeJsVersionsInfo);
+  rpc DownloadNodeJsVersion(RequestVersion) returns (stream DownloadStatusResponse);
+  rpc AbortDownloadNodeJSVersion(EmptyParams) returns (EmptyParams);
 }
 
 service Environment{ 
   rpc ProcessStream(DataRequest) returns (stream ProcessInfo);
   // rpc GetNodejsInfo(EmptyParams) returns (NodejsVersionsInfo);
   rpc UpdateDefaultNodejsVersion(UpdateDefaultNodejsVersionParams) returns (StatusResponse);
-  rpc DownloadNodeJsVersion(RequestVersion) returns (stream DownloadStatusResponse);
   rpc RunProjectInCode(AppIdPayload) returns(EmptyParams);
 }
 

@@ -32,16 +32,4 @@ impl api::environment_server::Environment for EnvironmentImpl {
     ) -> Result<tonic::Response<api::StatusResponse>, Status> {
         Ok(tonic::Response::new(api::StatusResponse::default()))
     }
-
-    type DownloadNodeJsVersionStream =
-        tokio_stream::wrappers::ReceiverStream<Result<api::DownloadStatusResponse, Status>>;
-
-    async fn download_node_js_version(
-        &self,
-        _request: tonic::Request<api::RequestVersion>,
-    ) -> Result<tonic::Response<Self::DownloadNodeJsVersionStream>, Status> {
-        let (_, rx) = tokio::sync::mpsc::channel(4);
-        let stream = tokio_stream::wrappers::ReceiverStream::new(rx);
-        Ok(tonic::Response::new(stream))
-    }
 }
