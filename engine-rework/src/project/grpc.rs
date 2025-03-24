@@ -1,6 +1,5 @@
 use tonic::{Request, Response, Status};
 
-use crate::process::process_manager::ProcessManager;
 use crate::{api, persistence::storage::DbPool};
 
 use super::models::NewProject;
@@ -9,17 +8,16 @@ use super::repository::{
 };
 use super::worker::{PackageJsonParser, ProjectWorker};
 
-pub struct AppsImpl {
+pub struct ProjectCRUDImpl {
     pub db_pool: std::sync::Arc<DbPool>,
-    pub process_manager: std::sync::Arc<ProcessManager>,
 }
 
 #[tonic::async_trait]
-impl api::apps_server::Apps for AppsImpl {
+impl api::project_crud_server::ProjectCrud for ProjectCRUDImpl {
     async fn create_app(
         &self,
         request: Request<api::CreateAppPayload>,
-    ) -> Result<Response<api::App>, Status> {
+    ) -> Result<Response<api::Project>, Status> {
         let conn = &mut self
             .db_pool
             .get()
@@ -65,7 +63,7 @@ impl api::apps_server::Apps for AppsImpl {
 
         let created_proejct = create_project(conn, new_project)
             .map_err(|e| Status::invalid_argument(format!("Create project error: {}", e)))?;
-        Ok(Response::new(api::App {
+        Ok(Response::new(api::Project {
             id: created_proejct.id,
             path: created_proejct.path.to_string(),
             name: created_proejct.name.to_string(),
@@ -83,7 +81,7 @@ impl api::apps_server::Apps for AppsImpl {
     async fn read_app(
         &self,
         request: Request<api::AppIdPayload>,
-    ) -> Result<Response<api::App>, Status> {
+    ) -> Result<Response<api::Project>, Status> {
         let conn = &mut self
             .db_pool
             .get()
@@ -91,7 +89,7 @@ impl api::apps_server::Apps for AppsImpl {
         let req = request.into_inner();
         let project = get_project(conn, req.id)
             .map_err(|e| Status::not_found(format!("grpc error: {}", e)))?;
-        Ok(Response::new(api::App {
+        Ok(Response::new(api::Project {
             id: project.id,
             path: project.path,
             name: project.name,
@@ -113,8 +111,8 @@ impl api::apps_server::Apps for AppsImpl {
     async fn update_app(
         &self,
         _request: Request<api::CreateAppPayload>,
-    ) -> Result<Response<api::App>, Status> {
-        Ok(Response::new(api::App::default()))
+    ) -> Result<Response<api::Project>, Status> {
+        Ok(Response::new(api::Project::default()))
     }
 
     async fn remove_app(
@@ -135,7 +133,7 @@ impl api::apps_server::Apps for AppsImpl {
     async fn read_all_apps(
         &self,
         _request: Request<api::EmptyParams>,
-    ) -> Result<Response<api::AppList>, Status> {
+    ) -> Result<Response<api::ProjectList>, Status> {
         let conn = &mut self
             .db_pool
             .get()
@@ -144,9 +142,9 @@ impl api::apps_server::Apps for AppsImpl {
         let projects = get_all_projects(conn)
             .map_err(|err| Status::not_found(format!("Failed to fetch projects: {}", err)))?;
 
-        let apps = projects
+        let projects = projects
             .into_iter()
-            .map(|project| api::App {
+            .map(|project| api::Project {
                 id: project.id,
                 path: project.path,
                 name: project.name,
@@ -165,68 +163,20 @@ impl api::apps_server::Apps for AppsImpl {
             })
             .collect();
 
-        Ok(Response::new(api::AppList { apps }))
-    }
-
-    async fn run_app(
-        &self,
-        request: Request<api::RunAppRequest>,
-    ) -> Result<Response<api::AppRunTime>, Status> {
-        let conn = &mut self
-            .db_pool
-            .get()
-            .map_err(|_| Status::internal("Failed to acquire a database connection"))?;
-
-        let req = request.into_inner();
-        let project = get_project(conn, req.id)
-            .map_err(|e| Status::not_found(format!("grpc error: {}", e)))?;
-
-        let node_path = format!("/tmp/ssme/nodes/{}/bin/node", project.node_version.unwrap());
-        let js_file_path =
-            "/Users/annakarenina/develop/github.com/Anna-Karenina/ssme/engine-rework/test.js";
-
-        dbg!(&node_path);
-        dbg!(&js_file_path);
-        if let Err(err) = self
-            .process_manager
-            .start_process(project.id, &node_path, &[&js_file_path])
-            .await
-        {
-            return Err(Status::internal(format!(
-                "Failed to start process: {}",
-                err
-            )));
-        }
-
-        Ok(Response::new(api::AppRunTime::default()))
-    }
-
-    async fn stop_app(
-        &self,
-        request: Request<api::AppIdPayload>,
-    ) -> Result<Response<api::AppRunTime>, Status> {
-        if let Err(err) = self
-            .process_manager
-            .stop_process(request.into_inner().id)
-            .await
-        {
-            return Err(Status::internal(format!("Failed to stop process: {}", err)));
-        };
-
-        Ok(Response::new(api::AppRunTime::default()))
+        Ok(Response::new(api::ProjectList { projects }))
     }
 
     async fn sync_app_scripts(
         &self,
         _request: Request<api::AppIdPayload>,
-    ) -> Result<Response<api::App>, Status> {
-        Ok(Response::new(api::App::default()))
+    ) -> Result<Response<api::Project>, Status> {
+        Ok(Response::new(api::Project::default()))
     }
 
     async fn update_default_run_script(
         &self,
         request: Request<api::UpdateDefaultRunScriptParams>,
-    ) -> Result<Response<api::App>, Status> {
+    ) -> Result<Response<api::Project>, Status> {
         let conn = &mut self
             .db_pool
             .get()
@@ -258,7 +208,7 @@ impl api::apps_server::Apps for AppsImpl {
         update_project(conn, &project)
             .map_err(|e| Status::internal(format!("Failed to update project: {}", e)))?;
 
-        let response = api::App {
+        let response = api::Project {
             id: project.id,
             path: project.path,
             name: project.name,

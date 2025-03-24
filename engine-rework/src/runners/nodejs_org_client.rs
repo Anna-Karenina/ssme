@@ -1,3 +1,4 @@
+use crate::persistence::get_temp_path;
 use crate::runners::utils::{deserialize_empty_as_none, deserialize_lts};
 use crate::{api::DownloadStatusResponse, common::arch::Arch};
 
@@ -80,8 +81,12 @@ impl NodeJsOrgClient {
     ) {
         let file_name = NodeJsOrgClient::filename_for_version(version.to_owned(), "tar.gz");
         let url = format!("/{}/{}", version, file_name);
-        let base_source_path = "/tmp/ssme/nodes";
-        let temp_path = format!("/tmp/ssme/{}", file_name);
+        let base_source_path = format!("{}/tmp/nodes", get_temp_path().to_string_lossy());
+        let temp_path = format!(
+            "{}/tmp/ssme/{}",
+            get_temp_path().to_string_lossy(),
+            file_name
+        );
         let source_path = format!("{}/{}", base_source_path, version);
         let abort_rx = self.get_abort_receiver().await; // uses for thread safe abort downloading
 

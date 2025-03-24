@@ -25,7 +25,7 @@ impl ProcessManager {
             processes: Mutex::new(HashMap::new()),
         }
     }
-
+    pub async fn prepare_process() {}
     /// Запуск нового процесса и добавление его в HashMap
     pub async fn start_process(&self, id: i32, command: &str, args: &[&str]) -> Result<(), String> {
         let mut child = Command::new(command)

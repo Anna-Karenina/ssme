@@ -1,12 +1,15 @@
 use std::sync::Arc;
 
+use crate::persistence::get_temp_path;
+use crate::process::process_manager::ProcessManager;
+use crate::project::repository::get_project;
 use tokio::sync::mpsc;
+
 use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Request, Response, Status};
 
 use crate::api;
 use crate::environment::worker::EnvironmentWorker;
-
 use crate::persistence::storage::DbPool;
 
 use super::nodejs_org_client::NodeJsOrgClient;
@@ -14,13 +17,15 @@ use super::nodejs_org_client::NodeJsOrgClient;
 pub struct RunnersImpl {
     pub db_pool: Arc<DbPool>,
     node_js_org_client: Arc<NodeJsOrgClient>,
+    pub process_manager: std::sync::Arc<ProcessManager>,
 }
 
 impl RunnersImpl {
-    pub fn new(db_pool: Arc<DbPool>) -> Self {
+    pub fn new(db_pool: Arc<DbPool>, process_manager: Arc<ProcessManager>) -> Self {
         Self {
             db_pool,
             node_js_org_client: Arc::new(NodeJsOrgClient::new()),
+            process_manager,
         }
     }
 }
@@ -88,6 +93,54 @@ impl api::runners_server::Runners for RunnersImpl {
         self.node_js_org_client.cancel_download().await;
         Ok(Response::new(api::EmptyParams {}))
     }
+
+    async fn run_app(
+        &self,
+        request: Request<api::RunAppRequest>,
+    ) -> Result<Response<api::AppRunTime>, Status> {
+        let conn = &mut self
+            .db_pool
+            .get()
+            .map_err(|_| Status::internal("Failed to acquire a database connection"))?;
+
+        let req = request.into_inner();
+        let project = get_project(conn, req.id)
+            .map_err(|e| Status::not_found(format!("grpc error: {}", e)))?;
+
+        let node_path = format!(
+            "{}/tmp/ssme/nodes/{}/bin/node",
+            get_temp_path().to_string_lossy(),
+            project.node_version.unwrap()
+        );
+        let js_file_path =
+            "/Users/annakarenina/develop/github.com/Anna-Karenina/ssme/engine-rework/test.js";
+
+        if let Err(err) = self
+            .process_manager
+            .start_process(project.id, &node_path, &[&js_file_path])
+            .await
+        {
+            return Err(Status::internal(format!(
+                "Failed to start process: {}",
+                err
+            )));
+        }
+
+        Ok(Response::new(api::AppRunTime::default()))
+    }
+
+    async fn stop_app(
+        &self,
+        request: Request<api::AppIdPayload>,
+    ) -> Result<Response<api::AppRunTime>, Status> {
+        if let Err(err) = self
+            .process_manager
+            .stop_process(request.into_inner().id)
+            .await
+        {
+            return Err(Status::internal(format!("Failed to stop process: {}", err)));
+        };
+
+        Ok(Response::new(api::AppRunTime::default()))
+    }
 }
-// "https://nodejs.org/dist/node-v18.19.0-darwin-arm64.tar.gz"
-// "https://nodejs.org/download/release/v18.19.0/node-v18.19.0-darwin-arm64.tar.gz

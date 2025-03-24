@@ -5,23 +5,25 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/Anna-Karenina/sme-engine;apiv1";
 
 
-service Apps {
-  rpc CreateApp (CreateAppPayload) returns (App); 
-  rpc ReadApp (AppIdPayload) returns (App);
-  rpc UpdateApp (CreateAppPayload) returns (App);
+service ProjectCrud {
+  rpc CreateApp (CreateAppPayload) returns (Project); 
+  rpc ReadApp (AppIdPayload) returns (Project);
+  rpc UpdateApp (CreateAppPayload) returns (Project);
   rpc RemoveApp (AppIdPayload) returns (AppIdPayload);
-  rpc ReadAllApps (EmptyParams) returns (AppList);
+  rpc ReadAllApps (EmptyParams) returns (ProjectList);
 
-  rpc RunApp(RunAppRequest) returns (AppRunTime);
-  rpc StopApp(AppIdPayload) returns (AppRunTime);
-  rpc SyncAppScripts(AppIdPayload) returns(App);
-  rpc UpdateDefaultRunScript(UpdateDefaultRunScriptParams) returns (App);
+
+  rpc SyncAppScripts(AppIdPayload) returns(Project);
+  rpc UpdateDefaultRunScript(UpdateDefaultRunScriptParams) returns (Project);
 }
 
 service Runners {
   rpc GetAllNodeJsVersions(GetAllNodeJsVersionsParams) returns (NodeJsVersionsInfo);
   rpc DownloadNodeJsVersion(RequestVersion) returns (stream DownloadStatusResponse);
   rpc AbortDownloadNodeJSVersion(EmptyParams) returns (EmptyParams);
+
+  rpc RunApp(RunAppRequest) returns (AppRunTime);
+  rpc StopApp(AppIdPayload) returns (AppRunTime);
 }
 
 service Environment{ 
@@ -38,7 +40,7 @@ service Environment{
 
 message EmptyParams {}
 
-message App { 
+message Project { 
   int32 id                = 1;
   string path             = 2;
   string name             = 3;
@@ -59,8 +61,8 @@ message UpdateDefaultNodejsVersionParams {
     bool updateNvmrc = 3;
   }
 
-message AppList{
-  repeated App apps = 1;
+message ProjectList{
+  repeated Project projects = 1;
 }
 
 message CreateAppPayload { 
