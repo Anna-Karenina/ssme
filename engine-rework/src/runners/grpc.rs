@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use crate::common::progress_reporter::ProgressReporter;
 use crate::persistence::get_temp_path;
 use crate::process::process_manager::ProcessManager;
 use crate::project::repository::get_project;
@@ -13,6 +14,30 @@ use crate::environment::worker::EnvironmentWorker;
 use crate::persistence::storage::DbPool;
 
 use super::nodejs_org_client::NodeJsOrgClient;
+
+pub struct GrpcProgressReporter<'a> {
+    sender: &'a mpsc::Sender<Result<api::DownloadStatusResponse, Status>>,
+}
+
+impl<'a> GrpcProgressReporter<'a> {
+    pub fn new(sender: &'a mpsc::Sender<Result<api::DownloadStatusResponse, Status>>) -> Self {
+        Self { sender }
+    }
+}
+
+#[async_trait::async_trait]
+impl<'a> ProgressReporter for GrpcProgressReporter<'a> {
+    async fn report_progress(&self, message: String) {
+        let _ = self
+            .sender
+            .send(Ok(api::DownloadStatusResponse { status: message }))
+            .await;
+    }
+
+    async fn report_error(&self, error: String) {
+        let _ = self.sender.send(Err(Status::internal(error))).await;
+    }
+}
 
 pub struct RunnersImpl {
     pub db_pool: Arc<DbPool>,
@@ -74,6 +99,9 @@ impl api::runners_server::Runners for RunnersImpl {
         request: Request<api::RequestVersion>,
     ) -> Result<Response<Self::DownloadNodeJsVersionStream>, Status> {
         let req = request.into_inner();
+        if req.version.is_empty() {
+            return Err(Status::not_found("Version not provided"));
+        }
         let (tx, rx) = mpsc::channel(10);
         let client = self.node_js_org_client.clone();
 
@@ -88,9 +116,17 @@ impl api::runners_server::Runners for RunnersImpl {
 
     async fn abort_download_node_js_version(
         &self,
-        _request: Request<api::EmptyParams>,
+        request: Request<api::RequestVersion>,
     ) -> Result<Response<api::EmptyParams>, Status> {
-        self.node_js_org_client.cancel_download().await;
+        let version = request.into_inner().version;
+        if version.is_empty() {
+            return Err(Status::not_found("Version not provided"));
+        }
+        let _ = self
+            .node_js_org_client
+            .stop_download(&version)
+            .await
+            .map_err(|e| Status::internal(format!("{}", e)));
         Ok(Response::new(api::EmptyParams {}))
     }
 

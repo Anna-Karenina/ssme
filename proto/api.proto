@@ -20,7 +20,7 @@ service ProjectCrud {
 service Runners {
   rpc GetAllNodeJsVersions(GetAllNodeJsVersionsParams) returns (NodeJsVersionsInfo);
   rpc DownloadNodeJsVersion(RequestVersion) returns (stream DownloadStatusResponse);
-  rpc AbortDownloadNodeJSVersion(EmptyParams) returns (EmptyParams);
+  rpc AbortDownloadNodeJSVersion(RequestVersion) returns (EmptyParams);
 
   rpc RunApp(RunAppRequest) returns (AppRunTime);
   rpc StopApp(AppIdPayload) returns (AppRunTime);
