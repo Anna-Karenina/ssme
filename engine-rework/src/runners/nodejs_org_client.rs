@@ -1,35 +1,34 @@
 use crate::common::downloader::DownloadError;
 use crate::common::{downloader::Downloader, progress_reporter::ProgressReporter};
 use crate::persistence::get_temp_path;
-use crate::runners::grpc::GrpcProgressReporter;
-use crate::runners::utils::{deserialize_empty_as_none, deserialize_lts};
 
-use crate::{api::DownloadStatusResponse, common::arch::Arch};
+use crate::runners::utils::deserialize_lts;
+
+use crate::common::arch::Arch;
 
 use async_compression::tokio::bufread::GzipDecoder;
 
 use async_tar::Archive;
 use reqwest::header::{HeaderMap, USER_AGENT};
-use reqwest::{Client, Response, Url};
+use reqwest::{Client, Url};
 use serde::Deserialize;
 use std::collections::HashMap;
 use std::path::Path;
 use std::sync::Arc;
-use std::time::Duration;
 use tokio::fs::{self, File};
-use tokio::sync::{Mutex, mpsc};
-use tokio::time::sleep;
+use tokio::sync::Mutex;
 use tokio_util::compat::TokioAsyncReadCompatExt;
 use tokio_util::io::ReaderStream;
 use tonic::Status;
 
+#[allow(dead_code)]
 #[derive(Deserialize, Debug)]
 pub struct Node {
     pub version: String,
     #[serde(skip_deserializing)]
     pub date: String,
     files: Vec<String>,
-    #[serde(deserialize_with = "deserialize_empty_as_none")]
+    #[serde(default)]
     npm: Option<String>,
     #[serde(skip_deserializing)]
     v8: String,
@@ -79,7 +78,8 @@ impl NodeJsOrgClient {
         lts_only: bool,
         latest_only: bool,
     ) -> Result<Vec<Node>, Box<dyn std::error::Error + Send + Sync>> {
-        let response = self.get("/index.json").await?;
+        let url = format!("{}/index.json", self.base_url);
+        let response = self.http_client.get(url).send().await?;
         let mut nodes: Vec<Node> = response.json().await?;
 
         if lts_only {
@@ -95,15 +95,14 @@ impl NodeJsOrgClient {
     pub async fn download_specific_node_js_version(
         &self,
         version: String,
-        tx: mpsc::Sender<Result<DownloadStatusResponse, tonic::Status>>,
+        reporter: impl ProgressReporter + Send + Sync,
     ) {
         let file_name = Self::filename_for_version(version.to_owned(), "tar.gz");
         let url = format!("{}/{}/{}", &self.base_url, version, file_name);
         let base_source_path = format!("{}/tmp/nodes", get_temp_path().to_string_lossy());
-        let archive_file_name = format!("{}/{}", &base_source_path, file_name);
-        let extract_path = format!("{}/{}", &base_source_path, version);
+        let archive_file_path = format!("{}/{}", &base_source_path, file_name);
+        let target_path = format!("{}/{}", &base_source_path, version);
 
-        let reporter = GrpcProgressReporter::new(&tx);
         let downloader = Arc::new(Downloader::new(self.http_client.clone()));
 
         self.active_downloads
@@ -120,13 +119,13 @@ impl NodeJsOrgClient {
 
         reporter
             .report_progress(format!(
-                "Starting download of Node.js {} in {}",
+                "Starting download of Node.js {} into {}",
                 version, &base_source_path
             ))
             .await;
 
         match downloader
-            .download(&url, &archive_file_name, &reporter)
+            .download(&url, &archive_file_path, &reporter)
             .await
         {
             Ok(_) => {
@@ -134,22 +133,22 @@ impl NodeJsOrgClient {
                     .report_progress("Download complete, extracting files...".to_string())
                     .await;
 
-                if let Err(e) = Self::extract_tar_gz(&archive_file_name, &extract_path).await {
-                    let _ = tokio::fs::remove_dir_all(&extract_path).await;
+                if let Err(e) = Self::extract_tar_gz(&archive_file_path, &target_path).await {
+                    let _ = tokio::fs::remove_dir_all(&target_path).await;
                     reporter
                         .report_error(format!("Extraction failed: {}", e))
                         .await;
                     return;
                 }
 
-                if let Err(e) = tokio::fs::remove_file(&archive_file_name).await {
+                if let Err(e) = tokio::fs::remove_file(&archive_file_path).await {
                     reporter
                         .report_error(format!("Failed to clean up archive: {}", e))
                         .await;
                     // Not fatal - continue
                 }
 
-                let node_binary_path = Path::new(&extract_path).join("bin/node");
+                let node_binary_path = Path::new(&target_path).join("bin/node");
                 if !node_binary_path.exists() {
                     reporter
                         .report_error(
@@ -161,8 +160,8 @@ impl NodeJsOrgClient {
 
                 reporter
                     .report_progress(format!(
-                        "Successfully installed Node.js {} to {}",
-                        version, extract_path
+                        "Successfully installed Node.js {} into {}",
+                        version, target_path
                     ))
                     .await;
             }
@@ -183,14 +182,6 @@ impl NodeJsOrgClient {
 
         if let Some(downloader) = downloads.remove(download_id) {
             downloader.cancel();
-
-            // tokio::spawn(async move {
-            //     // This runs in background after the lock is released
-            //     if let Some(temp_path) = downloader.get_temp_path() {
-            //         let _ = tokio::fs::remove_file(temp_path).await;
-            //     }
-            // });
-
             Ok(())
         } else {
             Err(Status::not_found(format!(
@@ -200,35 +191,29 @@ impl NodeJsOrgClient {
         }
     }
     async fn extract_tar_gz(
-        file_path: &str,
+        path_to_arhive: &str,
         extract_path: &str,
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        // Open the file with better error handling
-        sleep(Duration::from_secs(1)).await;
-        let file = File::open(file_path).await.map_err(|e| {
-            let err = format!("Failed to open file {}: {}", file_path, e);
+        let file = File::open(path_to_arhive).await.map_err(|e| {
+            let err = format!("Failed to open file {}: {}", path_to_arhive, e);
             eprintln!("{}", err);
             err
         })?;
 
-        // Get the tar file name
-        let tar_file_name = Path::new(file_path)
+        let tar_file_name = Path::new(path_to_arhive)
             .file_name()
             .ok_or_else(|| {
-                let err = format!("Failed to extract file name from path: {}", file_path);
+                let err = format!("Failed to extract file name from path: {}", path_to_arhive);
                 eprintln!("{}", err);
                 err
             })?
             .to_string_lossy()
             .into_owned();
 
-        // Create stream reader
         let reader = ReaderStream::new(file);
         let stream_reader = tokio_util::io::StreamReader::new(reader);
-
-        // Decode gzip and create archive
         let decoder = GzipDecoder::new(stream_reader);
-        let mut archive = Archive::new(decoder.compat());
+        let archive = Archive::new(decoder.compat());
 
         let extract_path_as_path = Path::new(extract_path);
         let parent = extract_path_as_path.parent().ok_or_else(|| {
@@ -240,26 +225,17 @@ impl NodeJsOrgClient {
             err
         })?;
 
-        // Create parent directory if it doesn't exist
-        tokio::fs::create_dir_all(parent).await.map_err(|e| {
-            let err = format!("Failed to create directory {}: {}", parent.display(), e);
-            eprintln!("{}", err);
-            err
-        })?;
-
-        // Unpack the archive with better error handling
         archive.unpack(parent).await.map_err(|e| {
             let err = format!(
                 "Failed to unpack archive into {}: {} (file: {})",
                 parent.display(),
                 e,
-                file_path
+                path_to_arhive
             );
             eprintln!("{}", err);
             err
         })?;
 
-        // Handle the extracted directory renaming
         let stripped_name = tar_file_name
             .strip_suffix(".tar.gz")
             .unwrap_or(&tar_file_name);
@@ -286,7 +262,6 @@ impl NodeJsOrgClient {
 
         let target_dir = format!("{}/{}", parent.display(), version_dir_name);
 
-        // Check if the extracted directory exists before renaming
         if tokio::fs::metadata(&extracted_dir).await.is_ok() {
             tokio::fs::rename(&extracted_dir, &target_dir)
                 .await
@@ -327,17 +302,6 @@ impl NodeJsOrgClient {
             arch = arch,
             ext = ext,
         )
-    }
-
-    async fn get(&self, path: &str) -> Result<Response, Box<dyn std::error::Error + Send + Sync>> {
-        let url = format!("{}{}", self.base_url, path);
-        let response = Client::new()
-            .get(url)
-            .header("User-Agent", concat!("ssme ", env!("CARGO_PKG_VERSION")))
-            .send()
-            .await?;
-
-        Ok(response)
     }
 
     fn filter_latest_versions(versions: Vec<Node>) -> Vec<Node> {

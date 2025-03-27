@@ -107,7 +107,10 @@ impl api::runners_server::Runners for RunnersImpl {
 
         tokio::spawn(async move {
             client
-                .download_specific_node_js_version(req.version.to_string(), tx)
+                .download_specific_node_js_version(
+                    req.version.to_string(),
+                    GrpcProgressReporter::new(&tx),
+                )
                 .await
         });
 

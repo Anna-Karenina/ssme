@@ -34,7 +34,6 @@ impl Downloader {
     }
 
     pub fn cancel(&self) {
-        dbg!("try cancel");
         self.cancel_token.cancel();
     }
 

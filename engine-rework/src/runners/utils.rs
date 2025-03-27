@@ -18,11 +18,3 @@ where
         )),
     }
 }
-
-pub fn deserialize_empty_as_none<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    let v: Option<String> = Option::deserialize(deserializer)?;
-    Ok(v.filter(|s| !s.trim().is_empty())) // Если строка пустая — превращаем в None
-}

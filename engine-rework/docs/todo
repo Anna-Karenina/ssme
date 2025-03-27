@@ -1,4 +1,4 @@
 add multi-runtime support like Node,Deno,Bun
 
-Поправить stop_process сейчас там проблема, если мы читаем логи, то read_process_logs блокирует выполнение
++ Поправить stop_process сейчас там проблема, если мы читаем логи, то read_process_logs блокирует выполнение
 перетащить из nodejs_org_client всю логику которая не относится к этому клиенту
